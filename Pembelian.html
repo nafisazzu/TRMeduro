@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toko Meduro – Barang Masuk</title>
+  <script src="db.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f1f3f6;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #3b2fc9 0%, #5b3fd4 100%);
+      padding: 32px 24px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header a { color:#fff; text-decoration:none; display:flex; align-items:center; flex-shrink:0; }
+    .header a svg { width:22px; height:22px; }
+    .header-text h2 { font-size:18px; font-weight:700; }
+    .header-text p  { font-size:12px; opacity:0.85; margin-top:1px; }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 0;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .content { grid-template-columns: 1fr; } }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 20px;
+    }
+
+    .form-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 18px;
+      text-transform: lowercase;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: #374151;
+      background: #f9fafb;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #3b2fc9;
+      background: #fff;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #9ca3af; }
+
+    .form-group textarea { resize: none; height: 64px; }
+
+    .btn-simpan {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      background: #7c3aed;
+      border: none;
+      border-radius: 24px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-simpan:hover   { background: #6d28d9; }
+    .btn-simpan:active  { transform: scale(0.97); }
+    .btn-simpan svg     { width: 15px; height: 15px; }
+
+    /* ── RIGHT: RIWAYAT ── */
+    .right-panel {}
+
+    .riwayat-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .riwayat-head h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .riwayat-head svg { width: 20px; height: 20px; color: #F47C2B; }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+    thead tr { background: #374151; }
+    thead th {
+      padding: 12px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #fff;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.12s; }
+    tbody tr:hover { background: #f9fafb; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 11px 12px; color: #374151; vertical-align: middle; }
+
+    .qty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #d1fae5;
+      color: #065f46;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 99px;
+    }
+
+    .prod-name { font-weight: 600; color: #1f2937; }
+    .tanggal-cell { font-size: 11px; color: #6b7280; white-space: nowrap; }
+    .oleh-cell { font-size: 11px; color: #6b7280; }
+    .ket-cell { font-size: 11px; color: #374151; }
+
+    .more-row {
+      text-align: center;
+      padding: 13px;
+      font-size: 13px;
+      color: #6b7280;
+      cursor: pointer;
+      background: #f9fafb;
+      border-top: 1px solid #f3f4f6;
+      transition: background 0.15s;
+    }
+    .more-row:hover { background: #f3f4f6; color: #374151; }
+
+    /* Toast */
+    .toast {
+      display: none;
+      position: fixed; bottom: 90px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(34,160,90,0.92);
+      color: #fff; padding: 10px 24px;
+      border-radius: 10px; font-size: 13px; font-weight: 500;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      z-index: 200; white-space: nowrap;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed; bottom:0; left:0; right:0;
+      background:#fff; border-top:1px solid #e5e7eb;
+      display:flex; justify-content:center;
+      z-index:50; box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .nav-item {
+      display:flex; flex-direction:column;
+      align-items:center; gap:3px;
+      font-size:11px; color:#9ca3af;
+      text-decoration:none; cursor:pointer;
+      position:relative; padding:10px 0 14px; width:100px;
+      transition:color 0.2s;
+    }
+    @media (max-width: 600px) { .nav-item { width: calc(100% / 6); } }
+    .nav-item.active { color:#F47C2B; }
+    .nav-item:hover  { color:#F47C2B; }
+    .nav-item svg    { width:22px; height:22px; }
+    .nav-badge {
+      position:absolute; top:6px; right:18px;
+      background:#ef4444; color:#fff; font-size:9px;
+      width:16px; height:16px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <a href="dashboard.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+  </a>
+  <div class="header-text">
+    <h2>Barang Masuk</h2>
+    <p>Catat Penerimaan dari Supplier</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- LEFT: FORM -->
+  <div class="form-card">
+    <h3>catat penerimaan barang</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nama Barang</label>
+        <select id="fProduk">
+          <option value="">Pilih Produk</option>
+          <option>Kansas 20</option>
+          <option>HS Kretek 12</option>
+          <option>EspresoGold</option>
+          <option>Marlboro F Black 16</option>
+          <option>Marlboro F Black 12</option>
+          <option>Mild 16</option>
+          <option>Inter FIM</option>
+          <option>Surya 16 Merah FSM</option>
+          <option>Surya 12</option>
+          <option>Gajah Baru 16</option>
+          <option>GB Premium</option>
+          <option>Dunhil Hitam 12</option>
+          <option>Aqua 600ml</option>
+          <option>Teh Botol 350ml</option>
+          <option>Indomie Goreng</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nama Supplier</label>
+        <input id="fSupplier" type="text" placeholder="Nama Supplier / Distributor" />
+      </div>
+      <div class="form-group">
+        <label>Jumlah Masuk (pcs)</label>
+        <input id="fJumlah" type="number" placeholder="0" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Harga Beli Per Satuan (Rp)</label>
+        <input id="fHarga" type="number" placeholder="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Tanggal Masuk</label>
+        <input id="fTanggal" type="date" />
+      </div>
+      <div class="form-group">
+        <label>Keterangan (opsional)</label>
+        <input id="fKet" type="text" placeholder="Catatan tambahan" />
+      </div>
+    </div>
+    <button class="btn-simpan" onclick="simpanBarang()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Simpan Barang Masuk
+    </button>
+  </div>
+
+  <!-- RIGHT: RIWAYAT -->
+  <div class="right-panel">
+    <div class="riwayat-head">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <h3>Riwayat Barang Masuk</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Produk</th>
+            <th>Supplier</th>
+            <th>QTY</th>
+            <th>Total Beli</th>
+            <th>Ket.</th>
+            <th>Oleh</th>
+          </tr>
+        </thead>
+        <tbody id="riwayatBody"></tbody>
+      </table>
+      <div class="more-row" id="moreRow" onclick="tampilSemua()">Selengkapnya ...</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="nav-item " href="dashboard.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+    Beranda
+  </a>
+  <a class="nav-item " href="transaksi.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    Kasir
+  </a>
+  <a class="nav-item " href="produk.html" style="position:relative">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+    </svg>
+    <span class="nav-badge">!</span>
+    Stok
+  </a>
+  <a class="nav-item active" href="pembelian.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+    </svg>
+    Masuk
+  </a>
+  <a class="nav-item " href="barangkeluar.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/>
+    </svg>
+    Keluar
+  </a>
+  <a class="nav-item " href="laporan.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+    </svg>
+    Laporan
+  </a>
+</nav>
+
+<script>
+let showAll = false;
+const LIMIT = 8;
+
+function populateProdukDropdown() {
+  const produkList = getProduk();
+  const sel = document.getElementById('fProduk');
+  sel.innerHTML = '<option value="">Pilih Produk</option>' +
+    produkList.map(p => `<option value="${p.id}">${p.nama} (Stok: ${p.stok})</option>`).join('');
+
+  // Jika ada restock param dari produk.html
+  const params = new URLSearchParams(window.location.search);
+  const restokId = params.get('restock');
+  if (restokId) sel.value = restokId;
+}
+
+function renderRiwayat() {
+  const riwayat = getBarangMasuk();
+  const shown   = showAll ? riwayat : riwayat.slice(0, LIMIT);
+  document.getElementById('moreRow').style.display = (!showAll && riwayat.length > LIMIT) ? 'block' : 'none';
+
+  if (riwayat.length === 0) {
+    document.getElementById('riwayatBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:#9ca3af;font-size:13px">Belum ada riwayat barang masuk</td></tr>`;
+    return;
+  }
+
+  document.getElementById('riwayatBody').innerHTML = shown.map(r => `
+    <tr>
+      <td class="tanggal-cell">${r.tanggal}</td>
+      <td><span class="prod-name">${r.produk}</span></td>
+      <td>${r.supplier}</td>
+      <td><span class="qty-badge">+${r.qty}</span></td>
+      <td>${formatRp(r.qty * r.harga)}</td>
+      <td class="ket-cell">${r.ket}</td>
+      <td class="oleh-cell">${r.oleh}</td>
+    </tr>
+  `).join('');
+}
+
+function tampilSemua() { showAll = true; renderRiwayat(); }
+
+function simpanBarang() {
+  const produkId = document.getElementById('fProduk').value;
+  const supplier = document.getElementById('fSupplier').value.trim();
+  const jumlah   = parseInt(document.getElementById('fJumlah').value) || 0;
+  const harga    = parseInt(document.getElementById('fHarga').value) || 0;
+  const tanggal  = document.getElementById('fTanggal').value;
+  const ket      = document.getElementById('fKet').value.trim() || '-';
+
+  if (!produkId) { showToast('Pilih nama produk dulu!', false); return; }
+  if (!supplier) { showToast('Nama supplier wajib diisi!', false); return; }
+  if (jumlah < 1){ showToast('Jumlah masuk minimal 1!', false); return; }
+  if (!tanggal)  { showToast('Tanggal masuk wajib diisi!', false); return; }
+
+  // Ambil nama produk
+  const produkList = getProduk();
+  const p = produkList.find(x => x.id == produkId);
+  const namaProduk = p ? p.nama : produkId;
+
+  // Tambah stok di localStorage ← SINKRON ke semua halaman
+  tambahStok(parseInt(produkId), jumlah);
+  if (harga > 0) updateProduk(parseInt(produkId), { hargaBeli: harga });
+
+  // Simpan riwayat
+  tambahBarangMasuk({ tanggal, produk: namaProduk, produkId: parseInt(produkId), supplier, qty: jumlah, harga, ket, oleh: 'Admin' });
+
+  // Reset form
+  document.getElementById('fProduk').value   = '';
+  document.getElementById('fSupplier').value = '';
+  document.getElementById('fJumlah').value   = '';
+  document.getElementById('fHarga').value    = '';
+  document.getElementById('fKet').value      = '';
+
+  populateProdukDropdown();
+  renderRiwayat();
+  showToast(`Stok ${namaProduk} bertambah ${jumlah} pcs! 🎉`);
+}
+
+function showToast(msg, success = true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = success ? 'rgba(34,160,90,0.92)' : 'rgba(220,60,60,0.9)';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+document.getElementById('fTanggal').value = new Date().toISOString().split('T')[0];
+populateProdukDropdown();
+renderRiwayat();
+</script>
+</body>
+</html>
