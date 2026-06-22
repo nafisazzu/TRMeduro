@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toko Meduro – Laporan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f1f3f6;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      padding: 32px 24px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header a { color:#fff; text-decoration:none; display:flex; align-items:center; flex-shrink:0; }
+    .header a svg { width:22px; height:22px; }
+    .header-text h2 { font-size:18px; font-weight:700; }
+    .header-text p  { font-size:12px; opacity:0.85; margin-top:1px; }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 0;
+    }
+
+    /* ── TAB BUTTONS ── */
+    .tab-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      padding: 18px 20px;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .tab-btn:hover  { opacity: 0.88; }
+    .tab-btn:active { transform: scale(0.97); }
+    .tab-btn svg    { width: 20px; height: 20px; flex-shrink: 0; }
+    .tab-btn.green  { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .tab-btn.blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .tab-btn.active-tab { box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+
+    /* ── TOTAL PENDAPATAN ── */
+    .total-card {
+      background: linear-gradient(135deg, #a044ff, #7c3aed);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: #fff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      max-width: 320px;
+    }
+    .total-card svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .total-card-label { font-size: 13px; font-weight: 600; }
+    .total-card-val   { font-size: 22px; font-weight: 700; }
+    .total-card-sub {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; opacity: 0.85; margin-top: 2px;
+    }
+
+    /* ── CHART ── */
+    .chart-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+    }
+    .chart-card h4 {
+      font-size: 13px; font-weight: 600; color: #374151;
+      margin-bottom: 14px;
+    }
+    .chart-wrap { position: relative; height: 200px; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-bar select {
+      padding: 9px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      background: #fff;
+      color: #374151;
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-bar input[type="date"] {
+      padding: 9px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      background: #fff;
+      color: #374151;
+      outline: none;
+    }
+    .btn-export {
+      margin-left: auto;
+      padding: 9px 18px;
+      background: #16a34a;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-export:hover { background: #15803d; }
+    .btn-export svg   { width: 15px; height: 15px; }
+
+    /* ── GRID 2-COL ── */
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+    /* ── TOP 5 PRODUK ── */
+    .section-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    .section-card h4 {
+      font-size: 14px; font-weight: 700; color: #1f2937;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .top-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .top-item:last-child { border-bottom: none; }
+    .top-rank {
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #6b7280;
+      flex-shrink: 0;
+    }
+    .top-rank.gold   { background: #fef3c7; color: #d97706; }
+    .top-rank.silver { background: #f1f5f9; color: #64748b; }
+    .top-rank.bronze { background: #fef9ee; color: #b45309; }
+
+    .top-info { flex: 1; }
+    .top-name  { font-size: 12px; font-weight: 600; color: #1f2937; }
+    .top-qty   { font-size: 11px; color: #6b7280; }
+
+    .top-bar-wrap { width: 80px; }
+    .top-bar {
+      height: 6px; border-radius: 99px;
+      background: #e5e7eb; overflow: hidden;
+    }
+    .top-bar-fill { height: 100%; border-radius: 99px; background: #F47C2B; }
+    .top-val { font-size: 11px; font-weight: 600; color: #374151; margin-top: 3px; text-align: right; }
+
+    .empty-box {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 28px 0; gap: 8px; color: #9ca3af;
+    }
+    .empty-box p { font-size: 13px; }
+
+    /* ── DONUT CHART ── */
+    .donut-wrap { position: relative; height: 180px; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 12px; justify-content: center;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; color: #374151;
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    /* ── RIWAYAT TRANSAKSI TABLE ── */
+    .riwayat-section { display: none; }
+    .riwayat-section.show { display: block; }
+    .laporan-section { display: block; }
+    .laporan-section.hide { display: none; }
+
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+    }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    thead tr { background: #374151; }
+    thead th {
+      padding: 12px 14px; text-align:left;
+      font-weight:600; color:#fff; font-size:11px; white-space:nowrap;
+    }
+    tbody tr { border-bottom:1px solid #f3f4f6; transition:background 0.12s; }
+    tbody tr:hover { background:#f9fafb; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody td { padding:11px 14px; color:#374151; vertical-align:middle; }
+
+    .badge-metode {
+      display:inline-block; padding:3px 9px;
+      border-radius:99px; font-size:10px; font-weight:600;
+    }
+    .badge-metode.tunai    { background:#d1fae5; color:#065f46; }
+    .badge-metode.transfer { background:#dbeafe; color:#1e40af; }
+    .badge-metode.qris     { background:#ede9fe; color:#5b21b6; }
+
+    /* Toast */
+    .toast {
+      display:none; position:fixed; bottom:90px; left:50%;
+      transform:translateX(-50%);
+      background:rgba(34,160,90,0.92); color:#fff;
+      padding:10px 24px; border-radius:10px;
+      font-size:13px; font-weight:500;
+      box-shadow:0 4px 14px rgba(0,0,0,0.2);
+      z-index:200; white-space:nowrap;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position:fixed; bottom:0; left:0; right:0;
+      background:#fff; border-top:1px solid #e5e7eb;
+      display:flex; justify-content:center;
+      z-index:50; box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .nav-item {
+      display:flex; flex-direction:column;
+      align-items:center; gap:3px;
+      font-size:11px; color:#9ca3af;
+      text-decoration:none; cursor:pointer;
+      position:relative; padding:10px 0 14px; width:100px;
+      transition:color 0.2s;
+    }
+    @media (max-width: 600px) { .nav-item { width: calc(100% / 6); } }
+    .nav-item.active { color:#F47C2B; }
+    .nav-item:hover  { color:#F47C2B; }
+    .nav-item svg    { width:22px; height:22px; }
+    .nav-badge {
+      position:absolute; top:6px; right:18px;
+      background:#ef4444; color:#fff; font-size:9px;
+      width:16px; height:16px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <a href="dashboard.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+  </a>
+  <div class="header-text">
+    <h2>Laporan</h2>
+    <p>Analitik &amp; riwayat transaksi</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- TAB BUTTONS -->
+  <div class="tab-row">
+    <button class="tab-btn green active-tab" onclick="switchTab('laporan')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Laporan
+    </button>
+    <button class="tab-btn blue" onclick="window.location.href='riwayat-transaksi.html'">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      Riwayat Transaksi
+    </button>
+  </div>
+
+  <!-- TOTAL PENDAPATAN -->
+  <div class="total-card">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <div>
+      <div class="total-card-label">Total Pendapatan</div>
+      <div class="total-card-val" id="totalPendapatan">Rp 0</div>
+      <div class="total-card-sub">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:11px;height:11px">
+          <circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/>
+        </svg>
+        Semua Waktu
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LAPORAN SECTION ═══ -->
+  <div class="laporan-section" id="laporanSection">
+
+    <!-- Chart Penjualan -->
+    <div class="chart-card">
+      <h4>Penjualan Hari Ini</h4>
+      <div class="chart-wrap">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Top 5 + Donut -->
+    <div class="grid2">
+      <!-- Top 5 Produk -->
+      <div class="section-card">
+        <h4>🏆 Top 5 produk</h4>
+        <div id="top5Container">
+          <div class="empty-box"><p>Belum ada data</p></div>
+        </div>
+      </div>
+
+      <!-- Per Kategori -->
+      <div class="section-card">
+        <h4>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:#6b7280">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+          </svg>
+          Per Kategori
+        </h4>
+        <div class="donut-wrap">
+          <canvas id="donutChart"></canvas>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Minuman</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Makanan</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Perawatan</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> RT</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Rokok</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan Harian -->
+    <div class="section-card" style="margin-bottom:20px">
+      <h4>📊 Ringkasan Harian (7 Hari Terakhir)</h4>
+      <div style="margin-top:10px">
+        <div class="chart-wrap" style="height:160px">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /laporanSection -->
+
+  <!-- ═══ RIWAYAT SECTION ═══ -->
+  <div class="riwayat-section" id="riwayatSection">
+
+    <div class="filter-bar">
+      <select id="filterMetode">
+        <option value="">Semua Metode</option>
+        <option>Tunai</option>
+        <option>Transfer</option>
+        <option>QRIS</option>
+      </select>
+      <input type="date" id="filterTanggal" />
+      <button class="btn-export" onclick="exportCSV()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tanggal</th>
+            <th>Produk</th>
+            <th>QTY</th>
+            <th>Total</th>
+            <th>Metode</th>
+            <th>Kasir</th>
+          </tr>
+        </thead>
+        <tbody id="riwayatBody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /riwayatSection -->
+
+</div><!-- /content -->
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="nav-item " href="dashboard.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+    Beranda
+  </a>
+  <a class="nav-item " href="transaksi.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    Kasir
+  </a>
+  <a class="nav-item " href="produk.html" style="position:relative">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+    </svg>
+    <span class="nav-badge">!</span>
+    Stok
+  </a>
+  <a class="nav-item " href="pembelian.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+    </svg>
+    Masuk
+  </a>
+  <a class="nav-item " href="barangkeluar.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/>
+    </svg>
+    Keluar
+  </a>
+  <a class="nav-item active" href="laporan.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+    </svg>
+    Laporan
+  </a>
+</nav>
+
+<script>
+/* ── DUMMY DATA ── */
+const transaksiDummy = [
+  { tanggal:'2026-06-22', produk:'Mild 16',          qty:2, total:80000,  metode:'Tunai',    kasir:'Admin' },
+  { tanggal:'2026-06-22', produk:'Aqua 600ml',       qty:5, total:17500,  metode:'QRIS',     kasir:'Admin' },
+  { tanggal:'2026-06-21', produk:'Kansas 20',        qty:3, total:57000,  metode:'Tunai',    kasir:'Admin' },
+  { tanggal:'2026-06-21', produk:'Indomie Goreng',   qty:4, total:14000,  metode:'Transfer', kasir:'Admin' },
+  { tanggal:'2026-06-20', produk:'HS Kretek 12',     qty:2, total:20000,  metode:'Tunai',    kasir:'Admin' },
+  { tanggal:'2026-06-20', produk:'Surya 12',         qty:1, total:29000,  metode:'QRIS',     kasir:'Admin' },
+  { tanggal:'2026-06-19', produk:'Marlboro F Black 16', qty:1, total:35000, metode:'Tunai',  kasir:'Admin' },
+  { tanggal:'2026-06-19', produk:'Aqua 600ml',       qty:10, total:35000, metode:'Tunai',    kasir:'Admin' },
+  { tanggal:'2026-06-18', produk:'Inter FIM',        qty:2, total:58000,  metode:'Transfer', kasir:'Admin' },
+  { tanggal:'2026-06-18', produk:'GB Premium',       qty:3, total:57000,  metode:'Tunai',    kasir:'Admin' },
+];
+
+function formatRp(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+
+/* ── TABS ── */
+function switchTab(tab) {
+  const isLaporan = tab === 'laporan';
+  document.getElementById('laporanSection').classList.toggle('hide', !isLaporan);
+  document.getElementById('riwayatSection').classList.toggle('show', !isLaporan);
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active-tab', (i === 0) === isLaporan);
+  });
+  if (!isLaporan) renderRiwayat();
+}
+
+/* ── TOTAL PENDAPATAN ── */
+const total = transaksiDummy.reduce((s, t) => s + t.total, 0);
+document.getElementById('totalPendapatan').textContent = formatRp(total);
+
+/* ── LINE CHART (penjualan hari ini per jam) ── */
+const lineCtx = document.getElementById('lineChart').getContext('2d');
+new Chart(lineCtx, {
+  type: 'line',
+  data: {
+    labels: ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'],
+    datasets: [{
+      label: 'Penjualan',
+      data: [0,0,0,0,0,0,0,0,0,0],
+      borderColor: '#3b2fc9',
+      backgroundColor: 'rgba(59,47,201,0.08)',
+      borderWidth: 2,
+      pointRadius: 3,
+      tension: 0.4,
+      fill: true,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family:'Poppins', size:10 } } },
+      y: { beginAtZero: true, ticks: { font: { family:'Poppins', size:10 },
+        callback: v => 'Rp ' + v.toLocaleString('id-ID') } }
+    }
+  }
+});
+
+/* ── BAR CHART (7 hari) ── */
+const days = [];
+const dayVals = [];
+for (let i = 6; i >= 0; i--) {
+  const d = new Date('2026-06-22');
+  d.setDate(d.getDate() - i);
+  const key = d.toISOString().split('T')[0];
+  days.push(key.slice(5));
+  dayVals.push(transaksiDummy.filter(t => t.tanggal === key).reduce((s,t) => s+t.total, 0));
+}
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: days,
+    datasets: [{
+      label: 'Penjualan',
+      data: dayVals,
+      backgroundColor: '#F47C2B',
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family:'Poppins', size:10 } } },
+      y: { beginAtZero: true, ticks: { font: { family:'Poppins', size:10 },
+        callback: v => 'Rp ' + v.toLocaleString('id-ID') } }
+    }
+  }
+});
+
+/* ── DONUT CHART ── */
+const donutCtx = document.getElementById('donutChart').getContext('2d');
+new Chart(donutCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Minuman','Makanan','Perawatan','RT','Rokok'],
+    datasets: [{
+      data: [52500, 14000, 0, 0, 350000],
+      backgroundColor: ['#3b82f6','#22c55e','#f59e0b','#ef4444','#8b5cf6'],
+      borderWidth: 2, borderColor: '#fff',
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ' ' + formatRp(ctx.parsed)
+        }
+      }
+    },
+    cutout: '68%',
+  }
+});
+
+/* ── TOP 5 ── */
+const produkMap = {};
+transaksiDummy.forEach(t => {
+  produkMap[t.produk] = (produkMap[t.produk] || 0) + t.total;
+});
+const top5 = Object.entries(produkMap).sort((a,b) => b[1]-a[1]).slice(0,5);
+const maxVal = top5[0]?.[1] || 1;
+const rankClass = ['gold','silver','bronze','',''];
+
+if (top5.length > 0) {
+  document.getElementById('top5Container').innerHTML = top5.map(([nama, val], i) => `
+    <div class="top-item">
+      <div class="top-rank ${rankClass[i]}">${i+1}</div>
+      <div class="top-info">
+        <div class="top-name">${nama}</div>
+        <div class="top-qty">${formatRp(val)}</div>
+      </div>
+      <div class="top-bar-wrap">
+        <div class="top-bar"><div class="top-bar-fill" style="width:${Math.round(val/maxVal*100)}%"></div></div>
+        <div class="top-val">${Math.round(val/maxVal*100)}%</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── RIWAYAT TABLE ── */
+function renderRiwayat() {
+  const metode  = document.getElementById('filterMetode').value;
+  const tanggal = document.getElementById('filterTanggal').value;
+  let filtered  = transaksiDummy.filter(t =>
+    (!metode  || t.metode === metode) &&
+    (!tanggal || t.tanggal === tanggal)
+  );
+
+  document.getElementById('riwayatBody').innerHTML = filtered.length === 0
+    ? `<tr><td colspan="7" style="text-align:center;padding:24px;color:#9ca3af;font-size:13px">Tidak ada data</td></tr>`
+    : filtered.map((t, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td style="font-size:11px;color:#6b7280">${t.tanggal}</td>
+          <td style="font-weight:600;color:#1f2937">${t.produk}</td>
+          <td>${t.qty}</td>
+          <td style="font-weight:600;color:#F47C2B">${formatRp(t.total)}</td>
+          <td><span class="badge-metode ${t.metode.toLowerCase()}">${t.metode}</span></td>
+          <td style="font-size:11px;color:#6b7280">${t.kasir}</td>
+        </tr>`).join('');
+}
+
+document.getElementById('filterMetode').addEventListener('change', renderRiwayat);
+document.getElementById('filterTanggal').addEventListener('change', renderRiwayat);
+
+/* ── EXPORT CSV ── */
+function exportCSV() {
+  const rows = [['No','Tanggal','Produk','QTY','Total','Metode','Kasir']];
+  transaksiDummy.forEach((t,i) => rows.push([i+1, t.tanggal, t.produk, t.qty, t.total, t.metode, t.kasir]));
+  const csv  = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'laporan-transaksi.csv'; a.click();
+  showToast('File CSV berhasil diunduh!');
+}
+
+function showToast(msg, success = true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = success ? 'rgba(34,160,90,0.92)' : 'rgba(220,60,60,0.9)';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>
