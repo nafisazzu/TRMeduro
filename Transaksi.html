@@ -1,11 +1,244 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Toko Meduro – Kasir / POS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Kasir / POS – Toko Meduro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;max-width:430px;margin:0 auto;font-family:'Poppins',sans-serif;background:#f1f3f6;min-height:100vh;padding-bottom:70px}
+
+    /* HEADER */
+    .header{background:linear-gradient(135deg,#F47C2B,#e06a1a);padding:44px 16px 14px;color:#fff;display:flex;align-items:center;gap:10px}
+    .header a{color:#fff;text-decoration:none;display:flex;align-items:center}
+    .header a svg{width:20px;height:20px}
+    .header-text h2{font-size:16px;font-weight:700}
+    .header-text p{font-size:11px;opacity:0.85;margin-top:1px}
+
+    /* SEARCH */
+    .search-bar{padding:12px 12px 8px;display:flex;gap:8px}
+    .search-wrap{flex:1;position:relative}
+    .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#9ca3af}
+    .search-wrap input{width:100%;padding:9px 10px 9px 30px;border:1px solid #e5e7eb;border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;background:#fff;outline:none;color:#374151}
+    .search-wrap input::placeholder{color:#9ca3af}
+    .search-wrap input:focus{border-color:#F47C2B}
+    select.kat{padding:9px 10px;border:1px solid #e5e7eb;border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;background:#fff;color:#374151;outline:none}
+
+    /* PRODUCT GRID */
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px 8px}
+    .prod-card{background:#fff;border-radius:12px;padding:10px;cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.07);position:relative}
+    .prod-card:active{transform:scale(0.97)}
+    .prod-card.selected{border-color:#F47C2B;background:#fff8f3}
+    .prod-card.habis{opacity:0.45;cursor:not-allowed}
+    .prod-kat{font-size:9px;font-weight:600;color:#F47C2B;text-transform:uppercase;margin-bottom:3px}
+    .prod-nama{font-size:11px;font-weight:600;color:#1f2937;line-height:1.3;margin-bottom:3px}
+    .prod-harga{font-size:12px;font-weight:700;color:#F47C2B}
+    .prod-stok{font-size:10px;color:#9ca3af;margin-top:2px}
+    .qty-dot{position:absolute;top:6px;right:6px;background:#F47C2B;color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+    /* KERANJANG */
+    .keranjang-sheet{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.12);z-index:50}
+    .keranjang-head{background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:12px 16px;border-radius:18px 18px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between}
+    .keranjang-head-left{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+    .keranjang-head svg{width:18px;height:18px}
+    .toggle-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Poppins',sans-serif}
+
+    .keranjang-body{padding:12px 16px;display:none}
+    .keranjang-body.open{display:block}
+
+    .item-list{max-height:180px;overflow-y:auto;margin-bottom:10px}
+    .cart-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f3f4f6}
+    .cart-item:last-child{border-bottom:none}
+    .cart-item-info{flex:1}
+    .cart-item-name{font-size:11px;font-weight:600;color:#1f2937}
+    .cart-item-price{font-size:11px;color:#F47C2B;font-weight:600}
+    .qty-ctrl{display:flex;align-items:center;gap:5px}
+    .qty-btn{width:22px;height:22px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700;color:#374151}
+    .qty-btn:active{background:#fee4cc;border-color:#F47C2B;color:#F47C2B}
+    .qty-num{font-size:12px;font-weight:700;min-width:18px;text-align:center}
+
+    .summary{border-top:1px solid #f3f4f6;padding-top:8px;margin-bottom:8px}
+    .sum-row{display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px}
+    .sum-row.total{font-weight:700;color:#1f2937;font-size:13px}
+
+    .bayar-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+    .bayar-group{display:flex;flex-direction:column;gap:3px}
+    .bayar-label{font-size:10px;color:#6b7280;font-weight:500}
+    .bayar-input{padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;font-family:'Poppins',sans-serif;font-size:12px;color:#1f2937;outline:none;text-align:right;width:100%}
+    .bayar-input:focus{border-color:#F47C2B}
+    .kemb-val{font-size:13px;font-weight:700;color:#F47C2B;padding-top:4px}
+    .metode-sel{padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;font-family:'Poppins',sans-serif;font-size:12px;color:#374151;outline:none;width:100%}
+
+    .btn-bayar{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:12px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-bayar svg{width:16px;height:16px}
+
+    .keranjang-collapsed{padding:8px 16px 10px;display:flex;align-items:center;justify-content:space-between}
+    .keranjang-collapsed.hidden{display:none}
+    .total-mini{font-size:13px;font-weight:700;color:#1f2937}
+    .btn-bayar-mini{padding:8px 18px;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer}
+
+    /* STRUK */
+    .struk-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center}
+    .struk-overlay.open{display:flex}
+    .struk-modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;padding-bottom:20px}
+    .struk-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid #f3f4f6}
+    .struk-head h3{font-size:15px;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:7px}
+    .struk-head h3 svg{width:16px;height:16px;color:#6b7280}
+    .struk-close{width:30px;height:30px;border-radius:8px;border:1px solid #e5e7eb;background:#f9fafb;font-size:15px;cursor:pointer;color:#6b7280;display:flex;align-items:center;justify-content:center}
+    .struk-paper{margin:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;font-size:12px}
+    .struk-toko{text-align:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db}
+    .struk-toko-name{font-size:15px;font-weight:700;color:#1f2937}
+    .struk-toko-sub{font-size:11px;color:#6b7280;margin-top:2px;line-height:1.5}
+    .struk-meta{display:flex;justify-content:space-between;font-size:11px;color:#374151;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db}
+    .struk-meta-col{display:flex;flex-direction:column;gap:2px}
+    .struk-meta-col.right{text-align:right}
+    .struk-items{margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db;display:flex;flex-direction:column;gap:8px}
+    .struk-item-name{font-weight:600;color:#1f2937;font-size:12px}
+    .struk-item-detail{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;padding-left:6px}
+    .struk-totals{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db}
+    .struk-row{display:flex;justify-content:space-between;font-size:12px;color:#374151}
+    .struk-row.bold{font-weight:700;color:#1f2937;font-size:13px}
+    .struk-footer{text-align:center;font-size:11px;color:#6b7280;line-height:1.6}
+    .struk-actions{display:flex;gap:8px;padding:0 16px}
+    .btn-tutup{flex:1;padding:11px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;font-family:'Poppins',sans-serif;font-size:13px;cursor:pointer;color:#374151;font-weight:500}
+    .btn-cetak{flex:1;padding:11px;border-radius:10px;border:none;background:#7c3aed;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-cetak svg{width:14px;height:14px}
+
+    .toast{display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(34,160,90,0.92);color:#fff;padding:9px 20px;border-radius:10px;font-size:12px;font-weight:500;z-index:300;white-space:nowrap}
+
+    /* BOTTOM NAV */
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:6px 0 10px;z-index:60}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#9ca3af;text-decoration:none;cursor:pointer;position:relative;padding:2px 0;min-width:50px}
+    .nav-item.active{color:#F47C2B}
+    .nav-item svg{width:21px;height:21px}
+    .nav-badge{position:absolute;top:-2px;right:4px;background:#ef4444;color:#fff;font-size:8px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    @media print{
+      body>*:not(.struk-overlay){display:none!important}
+      .struk-overlay{display:flex!important;position:static!important;background:none!important}
+      .struk-modal{max-height:none!important}
+      .struk-head,.struk-actions{display:none!important}
+      .struk-paper{border:none!important;background:#fff!important;margin:0!important}
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a href="dashboard.html">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="header-text">
+    <h2>Kasir / POS</h2>
+    <p>Pilih produk dan proses pembayaran</p>
+  </div>
+</div>
+
+<div class="search-bar">
+  <div class="search-wrap">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input id="searchInput" type="text" placeholder="cari produk..." oninput="filterProduk()"/>
+  </div>
+  <select class="kat" id="kategoriFilter" onchange="filterProduk()">
+    <option value="">Semua</option>
+    <option value="Rokok">Rokok</option>
+    <option value="Minuman">Minuman</option>
+    <option value="Makanan">Makanan</option>
+    <option value="Sembako">Sembako</option>
+  </select>
+</div>
+
+<div class="product-grid" id="productGrid"></div>
+
+<!-- KERANJANG SHEET -->
+<div class="keranjang-sheet">
+  <div class="keranjang-head">
+    <div class="keranjang-head-left">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      Keranjang Belanja
+    </div>
+    <button class="toggle-btn" onclick="toggleKeranjang()">Buka ▲</button>
+  </div>
+
+  <!-- Collapsed -->
+  <div class="keranjang-collapsed" id="collapsedView">
+    <span class="total-mini" id="totalMini">Total: Rp 0</span>
+    <button class="btn-bayar-mini" onclick="toggleKeranjang()">Lihat Detail</button>
+  </div>
+
+  <!-- Expanded -->
+  <div class="keranjang-body" id="keranjangBody">
+    <div id="emptyState" style="text-align:center;padding:16px 0;color:#9ca3af;font-size:12px">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;margin:0 auto 6px;display:block;opacity:0.35"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      Pilih produk di atas
+    </div>
+    <div class="item-list" id="itemList" style="display:none"></div>
+
+    <div class="summary">
+      <div class="sum-row"><span>Subtotal</span><span id="subtotalVal">Rp 0</span></div>
+      <div class="sum-row total"><span>Total</span><span id="totalVal">Rp 0</span></div>
+    </div>
+
+    <div class="bayar-grid">
+      <div class="bayar-group">
+        <span class="bayar-label">Bayar (Rp)</span>
+        <input class="bayar-input" id="bayarInput" type="number" placeholder="0" oninput="hitungKembalian()"/>
+      </div>
+      <div class="bayar-group">
+        <span class="bayar-label">Kembalian</span>
+        <div class="kemb-val" id="kembalianVal">Rp 0</div>
+      </div>
+      <div class="bayar-group">
+        <span class="bayar-label">Metode</span>
+        <select class="metode-sel" id="metodeSelect">
+          <option>Tunai</option>
+          <option>Transfer</option>
+          <option>QRIS</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-bayar" onclick="prosesBayar()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      Proses Pembayaran
+    </button>
+  </div>
+</div>
+
+<!-- STRUK -->
+<div class="struk-overlay" id="strukOverlay">
+  <div class="struk-modal">
+    <div class="struk-head">
+      <h3>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Struk Pembayaran
+      </h3>
+      <button class="struk-close" onclick="tutupStruk()">✕</button>
+    </div>
+    <div class="struk-paper" id="strukPaper"></div>
+    <div class="struk-actions">
+      <button class="btn-tutup" onclick="tutupStruk()">Tutup</button>
+      <button class="btn-cetak" onclick="window.print()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        Cetak Struk
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="dashboard.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Beranda</a>
+  <a class="nav-item active" href="Transaksi.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Kasir</a>
+  <a class="nav-item" href="Produk.html" style="position:relative"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span class="nav-badge">!</span>Stok</a>
+  <a class="nav-item" href="Pembelian.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Masuk</a>
+  <a class="nav-item" href="BarangKeluar.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/></svg>Keluar</a>
+  <a class="nav-item" href="Laporan.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Laporan</a>
+</nav>
+
+<script>
 // ── TOKO MEDURO – Shared Data Store (localStorage) ──
 
 const DB_KEY = 'tokomeduro_produk';
@@ -123,272 +356,41 @@ function getNomorTrx() {
   localStorage.setItem('tokomeduro_trx_counter', n);
   return '#TRX-' + String(n).padStart(4, '0');
 }
-
-</script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Poppins', sans-serif; background: #f1f3f6; min-height: 100vh; padding-bottom: 80px; }
-
-    .header { background: linear-gradient(135deg, #F47C2B 0%, #e06a1a 100%); padding: 32px 24px 20px; color: #fff; display: flex; align-items: center; gap: 14px; }
-    .header a { color:#fff; text-decoration:none; display:flex; align-items:center; flex-shrink:0; }
-    .header a svg { width:22px; height:22px; }
-    .header-text h2 { font-size:18px; font-weight:700; }
-    .header-text p  { font-size:12px; opacity:0.85; margin-top:1px; }
-
-    .content { max-width:1200px; margin:0 auto; padding:20px 20px 0; display:grid; grid-template-columns:1fr 380px; gap:20px; align-items:start; }
-    @media (max-width:860px) { .content { grid-template-columns:1fr; } }
-
-    .search-row { display:flex; gap:10px; margin-bottom:16px; }
-    .search-wrap { flex:1; position:relative; }
-    .search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#9ca3af; }
-    .search-wrap input { width:100%; padding:10px 12px 10px 36px; border:1px solid #e5e7eb; border-radius:10px; font-family:'Poppins',sans-serif; font-size:13px; background:#fff; outline:none; color:#374151; transition:border-color 0.2s; }
-    .search-wrap input:focus { border-color:#F47C2B; }
-    .search-wrap input::placeholder { color:#9ca3af; }
-    select { padding:10px 14px; border:1px solid #e5e7eb; border-radius:10px; font-family:'Poppins',sans-serif; font-size:13px; background:#fff; color:#374151; outline:none; cursor:pointer; }
-
-    .product-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-    @media (max-width:500px) { .product-grid { grid-template-columns:repeat(2,1fr); } }
-
-    .prod-card { background:#fff; border-radius:14px; padding:14px; cursor:pointer; border:2px solid transparent; transition:border-color 0.15s,box-shadow 0.15s,transform 0.1s; box-shadow:0 1px 5px rgba(0,0,0,0.06); position:relative; }
-    .prod-card:hover { border-color:#F47C2B; box-shadow:0 4px 14px rgba(244,124,43,0.2); transform:translateY(-1px); }
-    .prod-card.selected { border-color:#F47C2B; background:#fff8f3; }
-    .prod-card.habis { opacity:0.5; cursor:not-allowed; }
-    .prod-kategori { font-size:10px; font-weight:600; color:#F47C2B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-    .prod-nama { font-size:13px; font-weight:600; color:#1f2937; margin-bottom:4px; line-height:1.3; }
-    .prod-harga { font-size:14px; font-weight:700; color:#F47C2B; margin-bottom:4px; }
-    .prod-stok { font-size:11px; color:#6b7280; }
-    .qty-badge { position:absolute; top:8px; right:8px; background:#F47C2B; color:#fff; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-
-    .right-panel { position:sticky; top:20px; }
-    .keranjang { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-    .keranjang-head { background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; }
-    .keranjang-head svg { width:20px; height:20px; }
-    .keranjang-body { padding:16px; }
-    .keranjang-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 0; gap:10px; color:#9ca3af; }
-    .keranjang-empty svg { width:40px; height:40px; opacity:0.4; }
-    .keranjang-empty p { font-size:13px; }
-    .item-list { display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; margin-bottom:12px; }
-    .item-list::-webkit-scrollbar { width:4px; }
-    .item-list::-webkit-scrollbar-thumb { background:#e5e7eb; border-radius:4px; }
-    .cart-item { display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; }
-    .cart-item:last-child { border-bottom:none; padding-bottom:0; }
-    .cart-item-info { flex:1; }
-    .cart-item-name  { font-size:12px; font-weight:600; color:#1f2937; }
-    .cart-item-price { font-size:12px; color:#F47C2B; font-weight:600; }
-    .qty-ctrl { display:flex; align-items:center; gap:6px; }
-    .qty-btn { width:26px; height:26px; border-radius:8px; border:1px solid #e5e7eb; background:#f9fafb; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; font-weight:700; color:#374151; transition:background 0.15s; }
-    .qty-btn:hover { background:#fee4cc; border-color:#F47C2B; color:#F47C2B; }
-    .qty-num { font-size:13px; font-weight:700; min-width:20px; text-align:center; }
-    .summary { border-top:1px solid #f3f4f6; padding-top:12px; display:flex; flex-direction:column; gap:8px; }
-    .summary-row { display:flex; justify-content:space-between; font-size:13px; color:#6b7280; }
-    .summary-row.total { font-weight:700; color:#1f2937; font-size:14px; }
-    .bayar-section { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
-    .bayar-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .bayar-label { font-size:13px; color:#374151; font-weight:500; white-space:nowrap; }
-    .bayar-input { flex:1; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-family:'Poppins',sans-serif; font-size:13px; color:#1f2937; outline:none; text-align:right; transition:border-color 0.2s; }
-    .bayar-input:focus { border-color:#F47C2B; }
-    .kembalian-val { font-size:13px; font-weight:700; color:#F47C2B; }
-    .metode-select { flex:1; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-family:'Poppins',sans-serif; font-size:13px; color:#374151; outline:none; }
-    .btn-bayar { margin-top:4px; width:100%; padding:14px; background:linear-gradient(135deg,#7c3aed,#6d28d9); border:none; border-radius:12px; font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity 0.2s,transform 0.1s; }
-    .btn-bayar:hover { opacity:0.9; }
-    .btn-bayar:active { transform:scale(0.98); }
-    .btn-bayar svg { width:18px; height:18px; }
-
-    /* STRUK */
-    .struk-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
-    .struk-overlay.open { display:flex; }
-    .struk-modal { background:#fff; border-radius:16px; width:100%; max-width:520px; margin:16px; box-shadow:0 8px 40px rgba(0,0,0,0.25); overflow:hidden; }
-    .struk-modal-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #f3f4f6; }
-    .struk-modal-head h3 { display:flex; align-items:center; gap:8px; font-size:16px; font-weight:700; color:#1f2937; }
-    .struk-modal-head h3 svg { width:18px; height:18px; color:#6b7280; }
-    .struk-close { width:32px; height:32px; border-radius:8px; border:1px solid #e5e7eb; background:#f9fafb; font-size:16px; cursor:pointer; color:#6b7280; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
-    .struk-close:hover { background:#fee2e2; color:#ef4444; border-color:#fca5a5; }
-    .struk-body { padding:20px; }
-    .struk-paper { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:20px; font-size:13px; }
-    .struk-toko { text-align:center; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed #d1d5db; }
-    .struk-toko-name { font-size:16px; font-weight:700; color:#1f2937; }
-    .struk-toko-sub { font-size:12px; color:#6b7280; margin-top:3px; line-height:1.6; }
-    .struk-meta { display:flex; justify-content:space-between; font-size:12px; color:#374151; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed #d1d5db; }
-    .struk-meta-col { display:flex; flex-direction:column; gap:3px; }
-    .struk-meta-col.right { text-align:right; }
-    .struk-items { margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed #d1d5db; display:flex; flex-direction:column; gap:10px; }
-    .struk-item-name { font-weight:600; color:#1f2937; font-size:13px; }
-    .struk-item-detail { display:flex; justify-content:space-between; font-size:12px; color:#6b7280; padding-left:8px; }
-    .struk-totals { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed #d1d5db; }
-    .struk-row { display:flex; justify-content:space-between; font-size:13px; color:#374151; }
-    .struk-row.bold { font-weight:700; color:#1f2937; font-size:14px; }
-    .struk-footer { text-align:center; font-size:12px; color:#6b7280; line-height:1.7; }
-    .struk-actions { display:flex; gap:10px; justify-content:flex-end; padding:14px 20px; border-top:1px solid #f3f4f6; }
-    .btn-tutup { padding:10px 22px; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb; font-family:'Poppins',sans-serif; font-size:13px; cursor:pointer; color:#374151; font-weight:500; }
-    .btn-tutup:hover { background:#f3f4f6; }
-    .btn-cetak { padding:10px 22px; border-radius:10px; border:none; background:#7c3aed; font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; color:#fff; cursor:pointer; display:flex; align-items:center; gap:7px; }
-    .btn-cetak:hover { background:#6d28d9; }
-    .btn-cetak svg { width:15px; height:15px; }
-
-    .toast { display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:rgba(34,160,90,0.92); color:#fff; padding:10px 24px; border-radius:10px; font-size:13px; font-weight:500; box-shadow:0 4px 14px rgba(0,0,0,0.2); z-index:99; white-space:nowrap; }
-
-    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #e5e7eb; display:flex; justify-content:center; z-index:50; box-shadow:0 -2px 12px rgba(0,0,0,0.06); }
-    .nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; color:#9ca3af; text-decoration:none; cursor:pointer; position:relative; padding:10px 0 14px; width:100px; transition:color 0.2s; }
-    @media (max-width:600px) { .nav-item { width:calc(100% / 6); } }
-    .nav-item.active { color:#F47C2B; }
-    .nav-item:hover  { color:#F47C2B; }
-    .nav-item svg { width:22px; height:22px; }
-    .nav-badge { position:absolute; top:6px; right:18px; background:#ef4444; color:#fff; font-size:9px; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; }
-
-    @media print {
-      body > *:not(.struk-overlay) { display:none !important; }
-      .struk-overlay { display:flex !important; position:static !important; background:none !important; }
-      .struk-modal { box-shadow:none !important; max-width:100% !important; margin:0 !important; }
-      .struk-modal-head, .struk-actions { display:none !important; }
-      .struk-body { padding:0 !important; }
-      .struk-paper { border:none !important; background:#fff !important; }
-    }
-  </style>
-</head>
-<body>
-
-<div class="header">
-  <a href="dashboard.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-  </a>
-  <div class="header-text">
-    <h2>Kasir / POS</h2>
-    <p>Pilih produk dan proses pembayaran</p>
-  </div>
-</div>
-
-<div class="content">
-  <!-- LEFT -->
-  <div class="left-panel">
-    <div class="search-row">
-      <div class="search-wrap">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input id="searchInput" type="text" placeholder="cari produk..." oninput="filterProduk()" />
-      </div>
-      <select id="kategoriFilter" onchange="filterProduk()">
-        <option value="">Semua Kategori</option>
-        <option value="Rokok">Rokok</option>
-        <option value="Minuman">Minuman</option>
-        <option value="Makanan">Makanan</option>
-        <option value="Sembako">Sembako</option>
-      </select>
-    </div>
-    <div class="product-grid" id="productGrid"></div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="right-panel">
-    <div class="keranjang">
-      <div class="keranjang-head">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-        Keranjang Belanja
-      </div>
-      <div class="keranjang-body">
-        <div class="keranjang-empty" id="emptyState">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-          <p>Pilih produk di atas</p>
-        </div>
-        <div class="item-list" id="itemList" style="display:none"></div>
-        <div class="summary">
-          <div class="summary-row"><span>Subtotal</span><span id="subtotalVal">Rp 0</span></div>
-          <div class="summary-row total"><span>Total</span><span id="totalVal">Rp 0</span></div>
-        </div>
-        <div class="bayar-section">
-          <div class="bayar-row">
-            <span class="bayar-label">Bayar (Rp)</span>
-            <input class="bayar-input" id="bayarInput" type="number" placeholder="0" oninput="hitungKembalian()" />
-          </div>
-          <div class="bayar-row">
-            <span class="bayar-label">Kembalian</span>
-            <span class="kembalian-val" id="kembalianVal">Rp 0</span>
-          </div>
-          <div class="bayar-row">
-            <span class="bayar-label">Metode</span>
-            <select class="metode-select" id="metodeSelect">
-              <option>Tunai</option>
-              <option>Transfer</option>
-              <option>QRIS</option>
-            </select>
-          </div>
-          <button class="btn-bayar" onclick="prosesBayar()">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Proses Pembayaran
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- STRUK MODAL -->
-<div class="struk-overlay" id="strukOverlay">
-  <div class="struk-modal">
-    <div class="struk-modal-head">
-      <h3>
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        Struk Pembayaran
-      </h3>
-      <button class="struk-close" onclick="tutupStruk()">✕</button>
-    </div>
-    <div class="struk-body">
-      <div class="struk-paper" id="strukPaper"></div>
-    </div>
-    <div class="struk-actions">
-      <button class="btn-tutup" onclick="tutupStruk()">Tutup</button>
-      <button class="btn-cetak" onclick="window.print()">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-        Cetak Struk
-      </button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <a class="nav-item" href="dashboard.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Beranda</a>
-  <a class="nav-item active" href="Transaksi.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Kasir</a>
-  <a class="nav-item" href="Produk.html" style="position:relative"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span class="nav-badge">!</span>Stok</a>
-  <a class="nav-item" href="Pembelian.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Masuk</a>
-  <a class="nav-item" href="BarangKeluar.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/></svg>Keluar</a>
-  <a class="nav-item" href="Laporan.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Laporan</a>
-</nav>
-
-<script>
 let keranjang = {};
 let produkData = [];
+let keranjangOpen = false;
 
-function init() {
-  produkData = getProduk();
-  filterProduk();
-  renderKeranjang();
+function toggleKeranjang() {
+  keranjangOpen = !keranjangOpen;
+  const body = document.getElementById('keranjangBody');
+  const collapsed = document.getElementById('collapsedView');
+  const btn = document.querySelector('.toggle-btn');
+  body.className = 'keranjang-body' + (keranjangOpen ? ' open' : '');
+  collapsed.className = 'keranjang-collapsed' + (keranjangOpen ? ' hidden' : '');
+  btn.textContent = keranjangOpen ? 'Tutup ▼' : 'Buka ▲';
 }
 
 function filterProduk() {
-  produkData = getProduk(); // selalu ambil fresh dari localStorage
+  produkData = getProduk();
   const q   = document.getElementById('searchInput').value.toLowerCase();
   const kat = document.getElementById('kategoriFilter').value;
   const filtered = produkData.filter(p =>
-    (!kat || p.kategori === kat) &&
-    (!q   || p.nama.toLowerCase().includes(q))
+    (!kat || p.kategori === kat) && (!q || p.nama.toLowerCase().includes(q))
   );
   renderProduk(filtered);
 }
 
 function renderProduk(list) {
   document.getElementById('productGrid').innerHTML = list.map(p => {
-    const qty   = keranjang[p.id] || 0;
+    const qty = keranjang[p.id] || 0;
     const habis = p.stok === 0;
-    return `
-      <div class="prod-card ${qty > 0 ? 'selected' : ''} ${habis ? 'habis' : ''}"
-           onclick="${habis ? '' : `tambahProduk(${p.id})`}">
-        ${qty > 0 ? `<div class="qty-badge">${qty}</div>` : ''}
-        <div class="prod-kategori">${p.kategori}</div>
-        <div class="prod-nama">${p.nama}</div>
-        <div class="prod-harga">${formatRp(p.hargaJual)}</div>
-        <div class="prod-stok">Stok: ${p.stok}</div>
-      </div>`;
+    return `<div class="prod-card ${qty>0?'selected':''} ${habis?'habis':''}" onclick="${habis?'':` tambahProduk(${p.id})`}">
+      ${qty>0?`<div class="qty-dot">${qty}</div>`:''}
+      <div class="prod-kat">${p.kategori}</div>
+      <div class="prod-nama">${p.nama}</div>
+      <div class="prod-harga">${formatRp(p.hargaJual)}</div>
+      <div class="prod-stok">Stok: ${p.stok}</div>
+    </div>`;
   }).join('');
 }
 
@@ -396,106 +398,82 @@ function tambahProduk(id) {
   produkData = getProduk();
   const p = produkData.find(x => x.id === id);
   if (!p || p.stok === 0) return;
-  const curQty = keranjang[id] || 0;
-  if (curQty >= p.stok) { showToast('Stok tidak mencukupi!', false); return; }
-  keranjang[id] = curQty + 1;
-  filterProduk();
-  renderKeranjang();
+  if ((keranjang[id]||0) >= p.stok) { showToast('Stok tidak mencukupi!', false); return; }
+  keranjang[id] = (keranjang[id]||0) + 1;
+  filterProduk(); renderKeranjang();
 }
 
 function ubahQty(id, delta) {
-  keranjang[id] = (keranjang[id] || 0) + delta;
+  keranjang[id] = (keranjang[id]||0) + delta;
   if (keranjang[id] <= 0) delete keranjang[id];
-  filterProduk();
-  renderKeranjang();
+  filterProduk(); renderKeranjang();
 }
 
 function renderKeranjang() {
-  const ids     = Object.keys(keranjang);
+  const ids = Object.keys(keranjang);
   const emptyEl = document.getElementById('emptyState');
   const listEl  = document.getElementById('itemList');
-
-  if (ids.length === 0) {
-    emptyEl.style.display = 'flex';
-    listEl.style.display  = 'none';
-  } else {
-    emptyEl.style.display = 'none';
-    listEl.style.display  = 'flex';
+  if (ids.length === 0) { emptyEl.style.display='block'; listEl.style.display='none'; }
+  else {
+    emptyEl.style.display='none'; listEl.style.display='flex';
     listEl.innerHTML = ids.map(id => {
-      const p   = produkData.find(x => x.id == id);
+      const p = produkData.find(x => x.id==id);
       const qty = keranjang[id];
-      return `
-        <div class="cart-item">
-          <div class="cart-item-info">
-            <div class="cart-item-name">${p.nama}</div>
-            <div class="cart-item-price">${formatRp(p.hargaJual * qty)}</div>
-          </div>
-          <div class="qty-ctrl">
-            <button class="qty-btn" onclick="ubahQty(${id}, -1)">−</button>
-            <span class="qty-num">${qty}</span>
-            <button class="qty-btn" onclick="ubahQty(${id}, 1)">+</button>
-          </div>
-        </div>`;
+      return `<div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.nama}</div>
+          <div class="cart-item-price">${formatRp(p.hargaJual*qty)}</div>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="ubahQty(${id},-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="ubahQty(${id},1)">+</button>
+        </div>
+      </div>`;
     }).join('');
   }
-
-  const total = ids.reduce((s, id) => {
-    const p = produkData.find(x => x.id == id);
-    return s + (p ? p.hargaJual * keranjang[id] : 0);
-  }, 0);
-
+  const total = ids.reduce((s,id) => { const p=produkData.find(x=>x.id==id); return s+(p?p.hargaJual*keranjang[id]:0); }, 0);
   document.getElementById('subtotalVal').textContent = formatRp(total);
   document.getElementById('totalVal').textContent    = formatRp(total);
+  document.getElementById('totalMini').textContent   = 'Total: ' + formatRp(total);
   hitungKembalian();
 }
 
 function hitungKembalian() {
-  const bayar = parseInt(document.getElementById('bayarInput').value) || 0;
-  const total = parseInt(document.getElementById('totalVal').textContent.replace(/[^0-9]/g,'')) || 0;
+  const bayar = parseInt(document.getElementById('bayarInput').value)||0;
+  const total = parseInt(document.getElementById('totalVal').textContent.replace(/[^0-9]/g,''))||0;
   const kemb  = bayar - total;
   const el    = document.getElementById('kembalianVal');
-  el.textContent = formatRp(kemb < 0 ? 0 : kemb);
-  el.style.color = kemb < 0 ? '#ef4444' : '#F47C2B';
+  el.textContent = formatRp(kemb<0?0:kemb);
+  el.style.color = kemb<0?'#ef4444':'#F47C2B';
 }
 
 function prosesBayar() {
   const ids = Object.keys(keranjang);
-  if (ids.length === 0) { showToast('Keranjang masih kosong!', false); return; }
-  const bayar  = parseInt(document.getElementById('bayarInput').value) || 0;
-  const total  = parseInt(document.getElementById('totalVal').textContent.replace(/[^0-9]/g,'')) || 0;
-  if (bayar < total) { showToast('Nominal bayar kurang!', false); return; }
-
-  const metode    = document.getElementById('metodeSelect').value;
+  if (ids.length===0) { showToast('Keranjang kosong!',false); return; }
+  const bayar = parseInt(document.getElementById('bayarInput').value)||0;
+  const total = parseInt(document.getElementById('totalVal').textContent.replace(/[^0-9]/g,''))||0;
+  if (bayar < total) { showToast('Nominal bayar kurang!',false); return; }
+  const metode = document.getElementById('metodeSelect').value;
   const kembalian = bayar - total;
-  const now       = new Date();
-  const tglStr    = now.toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });
-  const jamStr    = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-  const noTrx     = getNomorTrx();
-
-  // Snapshot items & kurangi stok di localStorage
+  const now = new Date();
+  const tglStr = now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  const jamStr = now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const noTrx  = getNomorTrx();
   const items = ids.map(id => {
-    const p   = produkData.find(x => x.id == id);
-    const qty = keranjang[id];
-    kurangiStok(p.id, qty); // ← update localStorage
-    return { nama: p.nama, qty, harga: p.hargaJual, subtotal: p.hargaJual * qty };
+    const p = produkData.find(x=>x.id==id); const qty=keranjang[id];
+    kurangiStok(p.id,qty);
+    return {nama:p.nama,qty,harga:p.hargaJual,subtotal:p.hargaJual*qty};
   });
-
-  // Simpan transaksi ke localStorage
-  tambahTransaksi({ noTrx, tanggal: now.toISOString().split('T')[0], tglStr, jamStr, items, total, bayar, kembalian, metode, kasir: 'Admin' });
-
-  // Reset keranjang
-  keranjang = {};
-  document.getElementById('bayarInput').value = '';
-
-  // Tampil struk
-  tampilStruk({ noTrx, tglStr, jamStr, items, total, bayar, kembalian, metode });
-
-  // Refresh produk
-  filterProduk();
-  renderKeranjang();
+  tambahTransaksi({noTrx,tanggal:now.toISOString().split('T')[0],tglStr,jamStr,items,total,bayar,kembalian,metode,kasir:'Admin'});
+  keranjang={};
+  document.getElementById('bayarInput').value='';
+  tampilStruk({noTrx,tglStr,jamStr,items,total,bayar,kembalian,metode});
+  filterProduk(); renderKeranjang();
+  if(keranjangOpen) toggleKeranjang();
 }
 
-function tampilStruk({ noTrx, tglStr, jamStr, items, total, bayar, kembalian, metode }) {
+function tampilStruk({noTrx,tglStr,jamStr,items,total,bayar,kembalian,metode}) {
   document.getElementById('strukPaper').innerHTML = `
     <div class="struk-toko">
       <div class="struk-toko-name">★ Toko Meduro ★</div>
@@ -505,36 +483,29 @@ function tampilStruk({ noTrx, tglStr, jamStr, items, total, bayar, kembalian, me
       <div class="struk-meta-col"><span>${noTrx}</span><span>Kasir: Admin</span></div>
       <div class="struk-meta-col right"><span>${tglStr}</span><span>${jamStr}</span></div>
     </div>
-    <div class="struk-items">
-      ${items.map(i => `
-        <div>
-          <div class="struk-item-name">${i.nama}</div>
-          <div class="struk-item-detail"><span>${i.qty} x ${formatRp(i.harga)}</span><span>${formatRp(i.subtotal)}</span></div>
-        </div>`).join('')}
-    </div>
+    <div class="struk-items">${items.map(i=>`<div><div class="struk-item-name">${i.nama}</div><div class="struk-item-detail"><span>${i.qty} x ${formatRp(i.harga)}</span><span>${formatRp(i.subtotal)}</span></div></div>`).join('')}</div>
     <div class="struk-totals">
       <div class="struk-row bold"><span>TOTAL</span><span>${formatRp(total)}</span></div>
       <div class="struk-row"><span>${metode}</span><span>${formatRp(bayar)}</span></div>
       <div class="struk-row"><span>Kembalian</span><span>${formatRp(kembalian)}</span></div>
     </div>
-    <div class="struk-footer">Terima kasih sudah berbelanja!<br>Barang yang sudah dibeli tidak dapat dikembalikan.</div>
-  `;
+    <div class="struk-footer">Terima kasih sudah berbelanja!<br>Barang yang sudah dibeli tidak dapat dikembalikan.</div>`;
   document.getElementById('strukOverlay').classList.add('open');
 }
 
-function tutupStruk() {
-  document.getElementById('strukOverlay').classList.remove('open');
+function tutupStruk() { document.getElementById('strukOverlay').classList.remove('open'); }
+
+function showToast(msg, ok=true) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=ok?'rgba(34,160,90,0.92)':'rgba(220,60,60,0.9)';
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
 }
 
-function showToast(msg, success = true) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = success ? 'rgba(34,160,90,0.92)' : 'rgba(220,60,60,0.9)';
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
-
-init();
+produkData = getProduk();
+filterProduk();
+renderKeranjang();
 </script>
 </body>
 </html>
