@@ -1,208 +1,126 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Toko Meduro – Stok Barang</title>
-  <script src="db.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <title>Stok Barang – Toko Meduro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Poppins', sans-serif; background: #f1f3f6; min-height: 100vh; padding-bottom: 80px; }
-
-    .header { background: linear-gradient(135deg, #3b2fc9 0%, #5b3fd4 100%); padding: 32px 24px 20px; color: #fff; display: flex; align-items: center; gap: 14px; }
-    .header a { color: #fff; text-decoration: none; display: flex; align-items: center; flex-shrink: 0; }
-    .header a svg { width: 22px; height: 22px; }
-    .header-text h2 { font-size: 18px; font-weight: 700; }
-    .header-text p  { font-size: 12px; opacity: 0.85; margin-top: 1px; }
-
-    .content { max-width: 1100px; margin: 0 auto; padding: 24px 20px 0; }
-
-    .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .search-wrap { flex: 1; min-width: 180px; position: relative; }
-    .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: #6b7280; }
-    .search-wrap input { width: 100%; padding: 11px 14px 11px 40px; border: 2px solid #e5e7eb; border-radius: 24px; font-family: 'Poppins', sans-serif; font-size: 13px; background: #fff; color: #374151; outline: none; transition: border-color 0.2s; }
-    .search-wrap input:focus { border-color: #3b2fc9; }
-    .search-wrap input::placeholder { color: #9ca3af; }
-    .filter-wrap { position: relative; min-width: 160px; }
-    .filter-wrap svg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: #6b7280; pointer-events: none; }
-    .filter-wrap select { width: 100%; padding: 11px 40px 11px 18px; border: 2px solid #e5e7eb; border-radius: 24px; font-family: 'Poppins', sans-serif; font-size: 13px; background: #fff; color: #374151; outline: none; appearance: none; cursor: pointer; transition: border-color 0.2s; }
-    .filter-wrap select:focus { border-color: #3b2fc9; }
-    .btn-add { padding: 11px 20px; background: #F47C2B; border: none; border-radius: 24px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; white-space: nowrap; }
-    .btn-add:hover { background: #e06a1a; }
-    .btn-add svg { width: 16px; height: 16px; }
-
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr; } }
-    .stat-mini { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 4px; }
-    .stat-mini-label { font-size: 11px; color: #6b7280; font-weight: 500; }
-    .stat-mini-val   { font-size: 22px; font-weight: 700; color: #1f2937; }
-    .stat-mini-sub   { font-size: 11px; }
-
-    .table-wrap { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead tr { background: #374151; }
-    thead th { padding: 13px 14px; text-align: left; font-weight: 600; color: #fff; font-size: 12px; white-space: nowrap; }
-    thead th:first-child { width: 40px; text-align: center; }
-    tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.12s; }
-    tbody tr:hover { background: #f9fafb; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody td { padding: 12px 14px; color: #374151; vertical-align: middle; }
-    tbody td:first-child { text-align: center; color: #9ca3af; font-size: 12px; }
-
-    .prod-name { font-weight: 600; color: #1f2937; }
-    .badge-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-    .badge-status.aman   { background: #d1fae5; color: #065f46; }
-    .badge-status.habis  { background: #fee2e2; color: #991b1b; }
-    .badge-status.kritis { background: #fef3c7; color: #92400e; }
-    .margin-val { font-weight: 600; color: #3b82f6; }
-
-    .action-wrap { display: flex; gap: 6px; }
-    .btn-action { width: 30px; height: 30px; border-radius: 8px; border: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
-    .btn-action svg { width: 14px; height: 14px; }
-    .btn-action.edit:hover  { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; }
-    .btn-action.hapus:hover { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
-
-    .more-row { text-align: center; padding: 14px; font-size: 13px; color: #6b7280; cursor: pointer; background: #f9fafb; border-top: 1px solid #f3f4f6; transition: background 0.15s; }
-    .more-row:hover { background: #f3f4f6; color: #374151; }
-
-    /* Modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: #fff; border-radius: 18px; padding: 28px 24px; width: 100%; max-width: 440px; margin: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); }
-    .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; color: #1f2937; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .form-group label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; }
-    .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 13px; color: #374151; outline: none; }
-    .form-group input:focus, .form-group select:focus { border-color: #3b2fc9; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-cancel { padding: 10px 20px; border-radius: 10px; border: 1px solid #e5e7eb; background: #f9fafb; font-family: 'Poppins', sans-serif; font-size: 13px; cursor: pointer; color: #374151; }
-    .btn-save { padding: 10px 24px; border-radius: 10px; border: none; background: #3b2fc9; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; }
-    .btn-save:hover { background: #2d23a0; }
-
-    .toast { display: none; position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(34,160,90,0.92); color: #fff; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,0.2); z-index: 200; white-space: nowrap; }
-
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; display: flex; justify-content: center; z-index: 50; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: #9ca3af; text-decoration: none; cursor: pointer; position: relative; padding: 10px 0 14px; width: 100px; transition: color 0.2s; }
-    @media (max-width: 600px) { .nav-item { width: calc(100% / 6); } }
-    .nav-item.active { color: #F47C2B; }
-    .nav-item:hover  { color: #F47C2B; }
-    .nav-item svg    { width: 22px; height: 22px; }
-    .nav-badge { position: absolute; top: 6px; right: 18px; background: #ef4444; color: #fff; font-size: 9px; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;max-width:430px;margin:0 auto;font-family:'Poppins',sans-serif;background:#f1f3f6;min-height:100vh;padding-bottom:70px}
+    .header{background:linear-gradient(135deg,#3b2fc9,#5b3fd4);padding:44px 16px 14px;color:#fff;display:flex;align-items:center;gap:10px}
+    .header a{color:#fff;text-decoration:none;display:flex;align-items:center}
+    .header a svg{width:20px;height:20px}
+    .header-text h2{font-size:16px;font-weight:700}
+    .header-text p{font-size:11px;opacity:0.85;margin-top:1px}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px 0}
+    .stat{background:#fff;border-radius:10px;padding:10px 6px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .stat-val{font-size:18px;font-weight:700;color:#1f2937}
+    .stat-label{font-size:9px;color:#6b7280;margin-top:2px}
+    .toolbar{display:flex;gap:8px;padding:10px 12px 0;align-items:center}
+    .search-wrap{flex:1;position:relative}
+    .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#9ca3af}
+    .search-wrap input{width:100%;padding:9px 10px 9px 30px;border:1.5px solid #e5e7eb;border-radius:20px;font-family:'Poppins',sans-serif;font-size:12px;background:#fff;outline:none;color:#374151}
+    .search-wrap input:focus{border-color:#3b2fc9}
+    .search-wrap input::placeholder{color:#9ca3af}
+    .btn-add{padding:9px 12px;background:#F47C2B;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px}
+    .btn-add svg{width:13px;height:13px}
+    .filter-row{padding:6px 12px 0;display:flex;gap:6px;overflow-x:auto}
+    .filter-row::-webkit-scrollbar{display:none}
+    .filter-chip{padding:5px 12px;border-radius:20px;border:1.5px solid #e5e7eb;background:#fff;font-family:'Poppins',sans-serif;font-size:11px;color:#6b7280;cursor:pointer;white-space:nowrap;flex-shrink:0}
+    .filter-chip.active{background:#3b2fc9;color:#fff;border-color:#3b2fc9}
+    .table-wrap{margin:10px 12px 0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.07)}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    thead tr{background:#374151}
+    thead th{padding:9px 8px;text-align:left;font-weight:600;color:#fff;font-size:10px;white-space:nowrap}
+    tbody tr{border-bottom:1px solid #f3f4f6}
+    tbody tr:last-child{border-bottom:none}
+    tbody td{padding:9px 8px;color:#374151;vertical-align:middle}
+    .prod-name{font-weight:600;color:#1f2937;font-size:11px}
+    .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:600}
+    .badge.aman{background:#d1fae5;color:#065f46}
+    .badge.habis{background:#fee2e2;color:#991b1b}
+    .badge.kritis{background:#fef3c7;color:#92400e}
+    .margin-val{color:#3b82f6;font-weight:600}
+    .action-wrap{display:flex;gap:4px}
+    .btn-act{width:26px;height:26px;border-radius:7px;border:1px solid #e5e7eb;background:#f9fafb;display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .btn-act svg{width:12px;height:12px}
+    .btn-act.restock{background:#fef3c7;border-color:#f59e0b;color:#b45309}
+    .btn-act.edit:active{background:#eff6ff}
+    .btn-act.hapus:active{background:#fef2f2}
+    .more-row{text-align:center;padding:10px;font-size:12px;color:#6b7280;cursor:pointer;background:#f9fafb;border-top:1px solid #f3f4f6}
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:flex-end;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:20px 16px 30px}
+    .modal h3{font-size:15px;font-weight:700;color:#1f2937;margin-bottom:14px}
+    .form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+    .form-group label{font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase}
+    .form-group input,.form-group select{padding:9px 11px;border:1px solid #e5e7eb;border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;color:#374151;background:#f9fafb;outline:none;width:100%}
+    .form-group input:focus,.form-group select:focus{border-color:#3b2fc9;background:#fff}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .modal-actions{display:flex;gap:8px;margin-top:14px}
+    .btn-cancel{flex:1;padding:11px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;font-family:'Poppins',sans-serif;font-size:13px;cursor:pointer;color:#374151}
+    .btn-save{flex:1;padding:11px;border-radius:10px;border:none;background:#3b2fc9;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer}
+    .toast{display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(34,160,90,0.92);color:#fff;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:500;z-index:300;white-space:nowrap}
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:6px 0 10px;z-index:60}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#9ca3af;text-decoration:none;cursor:pointer;position:relative;min-width:50px}
+    .nav-item.active{color:#F47C2B}
+    .nav-item svg{width:21px;height:21px}
+    .nav-badge{position:absolute;top:-2px;right:4px;background:#ef4444;color:#fff;font-size:8px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
   </style>
 </head>
 <body>
-
 <div class="header">
-  <a href="dashboard.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-  </a>
-  <div class="header-text">
-    <h2>Stok Barang</h2>
-    <p>Kelola inventori produk toko</p>
-  </div>
+  <a href="dashboard.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></a>
+  <div class="header-text"><h2>Stok Barang</h2><p>Kelola inventori produk toko</p></div>
 </div>
 
-<div class="content">
-
-  <div class="stats-row">
-    <div class="stat-mini">
-      <div class="stat-mini-label">Total Produk</div>
-      <div class="stat-mini-val" id="statTotal">0</div>
-      <div class="stat-mini-sub" style="color:#3b82f6">item terdaftar</div>
-    </div>
-    <div class="stat-mini">
-      <div class="stat-mini-label">Stok Aman</div>
-      <div class="stat-mini-val" id="statAman" style="color:#16a34a">0</div>
-      <div class="stat-mini-sub" style="color:#16a34a">produk</div>
-    </div>
-    <div class="stat-mini">
-      <div class="stat-mini-label">Stok Kritis</div>
-      <div class="stat-mini-val" id="statKritis" style="color:#d97706">0</div>
-      <div class="stat-mini-sub" style="color:#d97706">perlu restock</div>
-    </div>
-    <div class="stat-mini">
-      <div class="stat-mini-label">Habis</div>
-      <div class="stat-mini-val" id="statHabis" style="color:#dc2626">0</div>
-      <div class="stat-mini-sub" style="color:#dc2626">stok 0</div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <div class="search-wrap">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-      <input id="searchInput" type="text" placeholder="Cari Produk" oninput="renderTable()" />
-    </div>
-    <div class="filter-wrap">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h10M10 18h4"/></svg>
-      <select id="kategoriFilter" onchange="renderTable()">
-        <option value="">Semua Kategori</option>
-        <option>Rokok</option>
-        <option>Minuman</option>
-        <option>Makanan</option>
-        <option>Sembako</option>
-      </select>
-    </div>
-    <button class="btn-add" onclick="bukaModal(null)">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-      Tambah Produk
-    </button>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Produk</th>
-          <th>Kategori</th>
-          <th>Stok</th>
-          <th>Harga Beli</th>
-          <th>Harga Jual</th>
-          <th>Margin</th>
-          <th>Status</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div class="more-row" id="moreRow" onclick="tampilSemua()">Selengkapnya ...</div>
-  </div>
-
+<div class="stats-row">
+  <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-label">Total</div></div>
+  <div class="stat"><div class="stat-val" id="statAman" style="color:#16a34a">0</div><div class="stat-label">Aman</div></div>
+  <div class="stat"><div class="stat-val" id="statKritis" style="color:#d97706">0</div><div class="stat-label">Kritis</div></div>
+  <div class="stat"><div class="stat-val" id="statHabis" style="color:#dc2626">0</div><div class="stat-label">Habis</div></div>
 </div>
 
-<!-- MODAL -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input id="searchInput" type="text" placeholder="Cari produk..." oninput="renderTable()"/>
+  </div>
+  <button class="btn-add" onclick="bukaModal(null)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    Tambah
+  </button>
+</div>
+
+<div class="filter-row">
+  <button class="filter-chip active" onclick="setKat(this,'')">Semua</button>
+  <button class="filter-chip" onclick="setKat(this,'Rokok')">Rokok</button>
+  <button class="filter-chip" onclick="setKat(this,'Minuman')">Minuman</button>
+  <button class="filter-chip" onclick="setKat(this,'Makanan')">Makanan</button>
+  <button class="filter-chip" onclick="setKat(this,'Sembako')">Sembako</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Produk</th><th>Stok</th><th>Harga Jual</th><th>Status</th><th>Aksi</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="more-row" id="moreRow" onclick="tampilSemua()" style="display:none">Selengkapnya...</div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h3 id="modalTitle">Tambah Produk</h3>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Nama Produk</label>
-        <input id="fNama" type="text" placeholder="Nama produk..." />
-      </div>
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="fKategori">
-          <option>Rokok</option>
-          <option>Minuman</option>
-          <option>Makanan</option>
-          <option>Sembako</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Stok</label>
-        <input id="fStok" type="number" placeholder="0" min="0" />
-      </div>
-      <div class="form-group">
-        <label>Harga Beli (Rp)</label>
-        <input id="fHargaBeli" type="number" placeholder="0" min="0" />
-      </div>
-      <div class="form-group">
-        <label>Harga Jual (Rp)</label>
-        <input id="fHargaJual" type="number" placeholder="0" min="0" />
-      </div>
+    <div class="form-group"><label>Nama Produk</label><input id="fNama" type="text" placeholder="Nama produk..."/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Kategori</label><select id="fKategori"><option>Rokok</option><option>Minuman</option><option>Makanan</option><option>Sembako</option></select></div>
+      <div class="form-group"><label>Stok</label><input id="fStok" type="number" placeholder="0" min="0"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Harga Beli</label><input id="fHargaBeli" type="number" placeholder="0"/></div>
+      <div class="form-group"><label>Harga Jual</label><input id="fHargaJual" type="number" placeholder="0"/></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="tutupModal()">Batal</button>
@@ -213,190 +131,225 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a class="nav-item active" href="dashboard.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-    </svg>
-    Beranda
-  </a>
-  <a class="nav-item " href="Transaksi.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-    </svg>
-    Kasir
-  </a>
-  <a class="nav-item " href="Produk.html" style="position:relative">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-    </svg>
-    <span class="nav-badge">!</span>
-    Stok
-  </a>
-  <a class="nav-item " href="Pembelian.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-    </svg>
-    Masuk
-  </a>
-  <a class="nav-item " href="BarangKeluar.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/>
-    </svg>
-    Keluar
-  </a>
-  <a class="nav-item " href="Laporan.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-    </svg>
-    Laporan
-  </a>
+  <a class="nav-item" href="dashboard.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Beranda</a>
+  <a class="nav-item" href="Transaksi.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Kasir</a>
+  <a class="nav-item active" href="Produk.html" style="position:relative"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span class="nav-badge" id="navBadge">!</span>Stok</a>
+  <a class="nav-item" href="Pembelian.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Masuk</a>
+  <a class="nav-item" href="BarangKeluar.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/></svg>Keluar</a>
+  <a class="nav-item" href="Laporan.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Laporan</a>
 </nav>
+
 <script>
-let showAll = false;
-const LIMIT = 12;
-let editId  = null;
+// ── TOKO MEDURO – Shared Data Store (localStorage) ──
 
-function statusBadge(stok) {
-  if (stok === 0) return `<span class="badge-status habis">⚠ Habis</span>`;
-  if (stok <= 3)  return `<span class="badge-status kritis">⚠ Kritis</span>`;
-  return `<span class="badge-status aman">✓ Aman</span>`;
+const DB_KEY = 'tokomeduro_produk';
+const TRX_KEY = 'tokomeduro_transaksi';
+const MASUK_KEY = 'tokomeduro_barangmasuk';
+const KELUAR_KEY = 'tokomeduro_barangkeluar';
+
+const DEFAULT_PRODUK = [
+  { id:1,  nama:'Kansas 20',              kategori:'Rokok',   stok:3,  hargaBeli:16500, hargaJual:19000 },
+  { id:2,  nama:'HS Kretek 12',           kategori:'Rokok',   stok:5,  hargaBeli:8750,  hargaJual:10000 },
+  { id:3,  nama:'EspresoGold',            kategori:'Rokok',   stok:2,  hargaBeli:17700, hargaJual:20000 },
+  { id:4,  nama:'Marlboro F Black 16',    kategori:'Rokok',   stok:3,  hargaBeli:30601, hargaJual:35000 },
+  { id:5,  nama:'Marlboro F Black 12',    kategori:'Rokok',   stok:10, hargaBeli:23531, hargaJual:27000 },
+  { id:6,  nama:'Mild 16',                kategori:'Rokok',   stok:6,  hargaBeli:35074, hargaJual:40000 },
+  { id:7,  nama:'Inter FIM',              kategori:'Rokok',   stok:4,  hargaBeli:25900, hargaJual:29000 },
+  { id:8,  nama:'Surya 16 Merah FSM',     kategori:'Rokok',   stok:3,  hargaBeli:34900, hargaJual:39000 },
+  { id:9,  nama:'Surya 12',               kategori:'Rokok',   stok:10, hargaBeli:25850, hargaJual:29000 },
+  { id:10, nama:'Gajah Baru 16',          kategori:'Rokok',   stok:10, hargaBeli:20650, hargaJual:23000 },
+  { id:11, nama:'GB Premium',             kategori:'Rokok',   stok:6,  hargaBeli:16700, hargaJual:19000 },
+  { id:12, nama:'Dunhil Hitam 12',        kategori:'Rokok',   stok:5,  hargaBeli:21400, hargaJual:24500 },
+  { id:13, nama:'Aqua 600ml',             kategori:'Minuman', stok:24, hargaBeli:2500,  hargaJual:3500  },
+  { id:14, nama:'Teh Botol 350ml',        kategori:'Minuman', stok:0,  hargaBeli:3200,  hargaJual:4000  },
+  { id:15, nama:'Indomie Goreng',         kategori:'Makanan', stok:2,  hargaBeli:2800,  hargaJual:3500  },
+];
+
+// ── PRODUK ──
+function getProduk() {
+  const raw = localStorage.getItem(DB_KEY);
+  if (!raw) {
+    localStorage.setItem(DB_KEY, JSON.stringify(DEFAULT_PRODUK));
+    return DEFAULT_PRODUK;
+  }
+  return JSON.parse(raw);
 }
 
-function margin(beli, jual) {
-  if (!beli) return '-';
-  return '+' + Math.round((jual - beli) / beli * 100) + '%';
+function saveProduk(data) {
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
 }
 
-function renderTable() {
-  const produk = getProduk();
-  const q   = document.getElementById('searchInput').value.toLowerCase();
-  const kat = document.getElementById('kategoriFilter').value;
+function tambahProdukBaru(p) {
+  const list = getProduk();
+  const newId = Math.max(...list.map(x => x.id)) + 1;
+  list.push({ ...p, id: newId });
+  saveProduk(list);
+  return newId;
+}
 
-  const filtered = produk.filter(p =>
-    (!kat || p.kategori === kat) &&
-    (!q   || p.nama.toLowerCase().includes(q))
-  );
+function updateProduk(id, changes) {
+  const list = getProduk();
+  const idx  = list.findIndex(x => x.id === id);
+  if (idx > -1) { Object.assign(list[idx], changes); saveProduk(list); }
+}
 
-  const shown = (showAll || filtered.length <= LIMIT) ? filtered : filtered.slice(0, LIMIT);
-  document.getElementById('moreRow').style.display = (!showAll && filtered.length > LIMIT) ? 'block' : 'none';
+function hapusProdukById(id) {
+  const list = getProduk().filter(x => x.id !== id);
+  saveProduk(list);
+}
 
-  document.getElementById('tableBody').innerHTML = shown.map((p, i) => `
+function tambahStok(id, qty) {
+  const list = getProduk();
+  const p    = list.find(x => x.id === id);
+  if (p) { p.stok += qty; saveProduk(list); }
+}
+
+function kurangiStok(id, qty) {
+  const list = getProduk();
+  const p    = list.find(x => x.id === id);
+  if (p) { p.stok = Math.max(0, p.stok - qty); saveProduk(list); }
+}
+
+// ── TRANSAKSI ──
+function getTransaksi() {
+  return JSON.parse(localStorage.getItem(TRX_KEY) || '[]');
+}
+
+function saveTransaksi(list) {
+  localStorage.setItem(TRX_KEY, JSON.stringify(list));
+}
+
+function tambahTransaksi(trx) {
+  const list = getTransaksi();
+  list.unshift(trx);
+  saveTransaksi(list);
+}
+
+// ── BARANG MASUK ──
+function getBarangMasuk() {
+  return JSON.parse(localStorage.getItem(MASUK_KEY) || '[]');
+}
+
+function tambahBarangMasuk(item) {
+  const list = getBarangMasuk();
+  list.unshift(item);
+  localStorage.setItem(MASUK_KEY, JSON.stringify(list));
+}
+
+// ── BARANG KELUAR ──
+function getBarangKeluar() {
+  return JSON.parse(localStorage.getItem(KELUAR_KEY) || '[]');
+}
+
+function tambahBarangKeluar(item) {
+  const list = getBarangKeluar();
+  list.unshift(item);
+  localStorage.setItem(KELUAR_KEY, JSON.stringify(list));
+}
+
+// ── UTILS ──
+function formatRp(n) {
+  return 'Rp ' + (n || 0).toLocaleString('id-ID');
+}
+
+function getNomorTrx() {
+  const n = parseInt(localStorage.getItem('tokomeduro_trx_counter') || '0') + 1;
+  localStorage.setItem('tokomeduro_trx_counter', n);
+  return '#TRX-' + String(n).padStart(4, '0');
+}
+let showAll=false, LIMIT=15, editId=null, activeKat='';
+
+function setKat(el, kat) {
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); activeKat=kat; renderTable();
+}
+
+function statusBadge(s){
+  if(s===0) return '<span class="badge habis">⚠ Habis</span>';
+  if(s<=3)  return '<span class="badge kritis">⚠ Kritis</span>';
+  return '<span class="badge aman">✓ Aman</span>';
+}
+function margin(b,j){ return b?'+'+Math.round((j-b)/b*100)+'%':'-'; }
+
+function renderTable(){
+  const produk=getProduk();
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const filtered=produk.filter(p=>(!activeKat||p.kategori===activeKat)&&(!q||p.nama.toLowerCase().includes(q)));
+  const shown=(showAll||filtered.length<=LIMIT)?filtered:filtered.slice(0,LIMIT);
+  document.getElementById('moreRow').style.display=(!showAll&&filtered.length>LIMIT)?'block':'none';
+  document.getElementById('tableBody').innerHTML=shown.map((p,i)=>`
     <tr>
-      <td>${i + 1}</td>
+      <td style="color:#9ca3af;font-size:10px">${i+1}</td>
       <td>
-        <span class="prod-name">${p.nama}</span><br>
-        <small style="color:#9ca3af;font-size:10px;cursor:pointer" onclick="lihatRiwayat(${p.id},'${p.nama}')">📋 lihat riwayat transaksi</small>
+        <div class="prod-name">${p.nama}</div>
+        <div style="font-size:9px;color:#9ca3af">${p.kategori}</div>
       </td>
-      <td>${p.kategori}</td>
-      <td>${p.stok} pcs</td>
-      <td>${formatRp(p.hargaBeli)}</td>
-      <td>${formatRp(p.hargaJual)}</td>
-      <td class="margin-val">${margin(p.hargaBeli, p.hargaJual)}</td>
+      <td style="font-weight:600">${p.stok}</td>
+      <td style="font-size:10px">${formatRp(p.hargaJual)}</td>
       <td>${statusBadge(p.stok)}</td>
       <td>
         <div class="action-wrap">
-          ${p.stok <= 3 ? `
-          <button class="btn-action" style="background:#fef3c7;border-color:#f59e0b;color:#b45309" onclick="restokProduk(${p.id})" title="Restock">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          </button>` : ''}
-          <button class="btn-action edit" onclick="bukaModal(${p.id})" title="Edit">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          </button>
-          <button class="btn-action hapus" onclick="hapusProduk(${p.id})" title="Hapus">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          </button>
+          ${p.stok<=3?`<button class="btn-act restock" onclick="restokProduk(${p.id})" title="Restock"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></button>`:''}
+          <button class="btn-act edit" onclick="bukaModal(${p.id})"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button class="btn-act hapus" onclick="hapusProduk(${p.id})"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
         </div>
       </td>
-    </tr>
-  `).join('');
-
-  // Update stats
-  document.getElementById('statTotal').textContent  = produk.length;
-  document.getElementById('statAman').textContent   = produk.filter(p => p.stok > 3).length;
-  document.getElementById('statKritis').textContent = produk.filter(p => p.stok > 0 && p.stok <= 3).length;
-  document.getElementById('statHabis').textContent  = produk.filter(p => p.stok === 0).length;
-
-  // Update nav badge — hilang jika tidak ada kritis/habis
-  const kritis = produk.filter(p => p.stok <= 3).length;
-  const badge  = document.getElementById('navBadge');
-  badge.textContent = kritis;
-  badge.style.display = kritis > 0 ? 'flex' : 'none';
+    </tr>`).join('');
+  document.getElementById('statTotal').textContent=produk.length;
+  document.getElementById('statAman').textContent=produk.filter(p=>p.stok>3).length;
+  document.getElementById('statKritis').textContent=produk.filter(p=>p.stok>0&&p.stok<=3).length;
+  document.getElementById('statHabis').textContent=produk.filter(p=>p.stok===0).length;
+  const k=produk.filter(p=>p.stok<=3).length;
+  const badge=document.getElementById('navBadge');
+  badge.textContent=k; badge.style.display=k>0?'flex':'none';
 }
 
-function tampilSemua() { showAll = true; renderTable(); }
+function tampilSemua(){showAll=true;renderTable();}
+function restokProduk(id){window.location.href='Pembelian.html?restock='+id;}
 
-function restokProduk(id) {
-  window.location.href = 'pembelian.html?restock=' + id;
-}
-
-// ── Link ke riwayat-transaksi.html filter by produk ──
-function lihatRiwayat(id, nama) {
-  window.location.href = 'riwayat-transaksi.html?produk=' + encodeURIComponent(nama);
-}
-
-function bukaModal(id) {
-  editId = id;
-  document.getElementById('modalTitle').textContent = id ? 'Edit Produk' : 'Tambah Produk';
-  if (id) {
-    const p = getProduk().find(x => x.id === id);
-    document.getElementById('fNama').value      = p.nama;
-    document.getElementById('fKategori').value  = p.kategori;
-    document.getElementById('fStok').value      = p.stok;
-    document.getElementById('fHargaBeli').value = p.hargaBeli;
-    document.getElementById('fHargaJual').value = p.hargaJual;
+function bukaModal(id){
+  editId=id;
+  document.getElementById('modalTitle').textContent=id?'Edit Produk':'Tambah Produk';
+  if(id){
+    const p=getProduk().find(x=>x.id===id);
+    document.getElementById('fNama').value=p.nama;
+    document.getElementById('fKategori').value=p.kategori;
+    document.getElementById('fStok').value=p.stok;
+    document.getElementById('fHargaBeli').value=p.hargaBeli;
+    document.getElementById('fHargaJual').value=p.hargaJual;
   } else {
-    ['fNama','fStok','fHargaBeli','fHargaJual'].forEach(x => document.getElementById(x).value = '');
-    document.getElementById('fKategori').value = 'Rokok';
+    ['fNama','fStok','fHargaBeli','fHargaJual'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('fKategori').value='Rokok';
   }
   document.getElementById('modalOverlay').classList.add('open');
 }
 
-function tutupModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  editId = null;
+function tutupModal(){document.getElementById('modalOverlay').classList.remove('open');editId=null;}
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)tutupModal();});
+
+function hapusProduk(id){
+  if(!confirm('Hapus produk ini?'))return;
+  hapusProdukById(id); renderTable(); showToast('Produk dihapus.');
 }
 
-function hapusProduk(id) {
-  if (!confirm('Hapus produk ini?')) return;
-  hapusProdukById(id);
-  renderTable();
-  showToast('Produk dihapus.');
+function simpanProduk(){
+  const nama=document.getElementById('fNama').value.trim();
+  const kategori=document.getElementById('fKategori').value;
+  const stok=parseInt(document.getElementById('fStok').value)||0;
+  const hargaBeli=parseInt(document.getElementById('fHargaBeli').value)||0;
+  const hargaJual=parseInt(document.getElementById('fHargaJual').value)||0;
+  if(!nama){showToast('Nama wajib diisi!',false);return;}
+  if(editId){updateProduk(editId,{nama,kategori,stok,hargaBeli,hargaJual});showToast('Produk diperbarui!');}
+  else{tambahProdukBaru({nama,kategori,stok,hargaBeli,hargaJual});showToast('Produk ditambahkan!');}
+  tutupModal(); renderTable();
 }
 
-function simpanProduk() {
-  const nama      = document.getElementById('fNama').value.trim();
-  const kategori  = document.getElementById('fKategori').value;
-  const stok      = parseInt(document.getElementById('fStok').value) || 0;
-  const hargaBeli = parseInt(document.getElementById('fHargaBeli').value) || 0;
-  const hargaJual = parseInt(document.getElementById('fHargaJual').value) || 0;
-
-  if (!nama) { showToast('Nama produk wajib diisi!', false); return; }
-
-  if (editId) {
-    updateProduk(editId, { nama, kategori, stok, hargaBeli, hargaJual });
-    showToast('Produk diperbarui!');
-  } else {
-    tambahProdukBaru({ nama, kategori, stok, hargaBeli, hargaJual });
-    showToast('Produk ditambahkan!');
-  }
-  tutupModal();
-  renderTable();
+function showToast(msg,ok=true){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=ok?'rgba(34,160,90,0.92)':'rgba(220,60,60,0.9)';
+  t.style.display='block';setTimeout(()=>t.style.display='none',2500);
 }
-
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) tutupModal();
-});
-
-function showToast(msg, success = true) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = success ? 'rgba(34,160,90,0.92)' : 'rgba(220,60,60,0.9)';
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
-
 renderTable();
 </script>
 </body>
