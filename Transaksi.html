@@ -5,7 +5,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Toko Meduro – Kasir / POS</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="db.js"></script>
+  <script>
+// ── TOKO MEDURO – Shared Data Store (localStorage) ──
+
+const DB_KEY = 'tokomeduro_produk';
+const TRX_KEY = 'tokomeduro_transaksi';
+const MASUK_KEY = 'tokomeduro_barangmasuk';
+const KELUAR_KEY = 'tokomeduro_barangkeluar';
+
+const DEFAULT_PRODUK = [
+  { id:1,  nama:'Kansas 20',              kategori:'Rokok',   stok:3,  hargaBeli:16500, hargaJual:19000 },
+  { id:2,  nama:'HS Kretek 12',           kategori:'Rokok',   stok:5,  hargaBeli:8750,  hargaJual:10000 },
+  { id:3,  nama:'EspresoGold',            kategori:'Rokok',   stok:2,  hargaBeli:17700, hargaJual:20000 },
+  { id:4,  nama:'Marlboro F Black 16',    kategori:'Rokok',   stok:3,  hargaBeli:30601, hargaJual:35000 },
+  { id:5,  nama:'Marlboro F Black 12',    kategori:'Rokok',   stok:10, hargaBeli:23531, hargaJual:27000 },
+  { id:6,  nama:'Mild 16',                kategori:'Rokok',   stok:6,  hargaBeli:35074, hargaJual:40000 },
+  { id:7,  nama:'Inter FIM',              kategori:'Rokok',   stok:4,  hargaBeli:25900, hargaJual:29000 },
+  { id:8,  nama:'Surya 16 Merah FSM',     kategori:'Rokok',   stok:3,  hargaBeli:34900, hargaJual:39000 },
+  { id:9,  nama:'Surya 12',               kategori:'Rokok',   stok:10, hargaBeli:25850, hargaJual:29000 },
+  { id:10, nama:'Gajah Baru 16',          kategori:'Rokok',   stok:10, hargaBeli:20650, hargaJual:23000 },
+  { id:11, nama:'GB Premium',             kategori:'Rokok',   stok:6,  hargaBeli:16700, hargaJual:19000 },
+  { id:12, nama:'Dunhil Hitam 12',        kategori:'Rokok',   stok:5,  hargaBeli:21400, hargaJual:24500 },
+  { id:13, nama:'Aqua 600ml',             kategori:'Minuman', stok:24, hargaBeli:2500,  hargaJual:3500  },
+  { id:14, nama:'Teh Botol 350ml',        kategori:'Minuman', stok:0,  hargaBeli:3200,  hargaJual:4000  },
+  { id:15, nama:'Indomie Goreng',         kategori:'Makanan', stok:2,  hargaBeli:2800,  hargaJual:3500  },
+];
+
+// ── PRODUK ──
+function getProduk() {
+  const raw = localStorage.getItem(DB_KEY);
+  if (!raw) {
+    localStorage.setItem(DB_KEY, JSON.stringify(DEFAULT_PRODUK));
+    return DEFAULT_PRODUK;
+  }
+  return JSON.parse(raw);
+}
+
+function saveProduk(data) {
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
+}
+
+function tambahProdukBaru(p) {
+  const list = getProduk();
+  const newId = Math.max(...list.map(x => x.id)) + 1;
+  list.push({ ...p, id: newId });
+  saveProduk(list);
+  return newId;
+}
+
+function updateProduk(id, changes) {
+  const list = getProduk();
+  const idx  = list.findIndex(x => x.id === id);
+  if (idx > -1) { Object.assign(list[idx], changes); saveProduk(list); }
+}
+
+function hapusProdukById(id) {
+  const list = getProduk().filter(x => x.id !== id);
+  saveProduk(list);
+}
+
+function tambahStok(id, qty) {
+  const list = getProduk();
+  const p    = list.find(x => x.id === id);
+  if (p) { p.stok += qty; saveProduk(list); }
+}
+
+function kurangiStok(id, qty) {
+  const list = getProduk();
+  const p    = list.find(x => x.id === id);
+  if (p) { p.stok = Math.max(0, p.stok - qty); saveProduk(list); }
+}
+
+// ── TRANSAKSI ──
+function getTransaksi() {
+  return JSON.parse(localStorage.getItem(TRX_KEY) || '[]');
+}
+
+function saveTransaksi(list) {
+  localStorage.setItem(TRX_KEY, JSON.stringify(list));
+}
+
+function tambahTransaksi(trx) {
+  const list = getTransaksi();
+  list.unshift(trx);
+  saveTransaksi(list);
+}
+
+// ── BARANG MASUK ──
+function getBarangMasuk() {
+  return JSON.parse(localStorage.getItem(MASUK_KEY) || '[]');
+}
+
+function tambahBarangMasuk(item) {
+  const list = getBarangMasuk();
+  list.unshift(item);
+  localStorage.setItem(MASUK_KEY, JSON.stringify(list));
+}
+
+// ── BARANG KELUAR ──
+function getBarangKeluar() {
+  return JSON.parse(localStorage.getItem(KELUAR_KEY) || '[]');
+}
+
+function tambahBarangKeluar(item) {
+  const list = getBarangKeluar();
+  list.unshift(item);
+  localStorage.setItem(KELUAR_KEY, JSON.stringify(list));
+}
+
+// ── UTILS ──
+function formatRp(n) {
+  return 'Rp ' + (n || 0).toLocaleString('id-ID');
+}
+
+function getNomorTrx() {
+  const n = parseInt(localStorage.getItem('tokomeduro_trx_counter') || '0') + 1;
+  localStorage.setItem('tokomeduro_trx_counter', n);
+  return '#TRX-' + String(n).padStart(4, '0');
+}
+
+</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Poppins', sans-serif; background: #f1f3f6; min-height: 100vh; padding-bottom: 80px; }
@@ -228,44 +347,14 @@
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a class="nav-item active" href="dashboard.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-    </svg>
-    Beranda
-  </a>
-  <a class="nav-item " href="Transaksi.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-    </svg>
-    Kasir
-  </a>
-  <a class="nav-item " href="Produk.html" style="position:relative">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-    </svg>
-    <span class="nav-badge">!</span>
-    Stok
-  </a>
-  <a class="nav-item " href="Pembelian.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-    </svg>
-    Masuk
-  </a>
-  <a class="nav-item " href="BarangKeluar.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/>
-    </svg>
-    Keluar
-  </a>
-  <a class="nav-item " href="Laporan.html">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-    </svg>
-    Laporan
-  </a>
+  <a class="nav-item" href="dashboard.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Beranda</a>
+  <a class="nav-item active" href="Transaksi.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Kasir</a>
+  <a class="nav-item" href="Produk.html" style="position:relative"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span class="nav-badge">!</span>Stok</a>
+  <a class="nav-item" href="Pembelian.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Masuk</a>
+  <a class="nav-item" href="BarangKeluar.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/></svg>Keluar</a>
+  <a class="nav-item" href="Laporan.html"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Laporan</a>
 </nav>
+
 <script>
 let keranjang = {};
 let produkData = [];
