@@ -101,6 +101,19 @@
     .nav-item.active{color:#F47C2B}
     .nav-item svg{width:21px;height:21px}
     .nav-badge{position:absolute;top:-2px;right:4px;color:#fff;font-size:8px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    /* ── PRINT / PDF ── */
+    @media print {
+      .bottom-nav,.tab-row,.filter-bar,.btn-export,.modal-overlay{display:none!important}
+      html,body{max-width:100%;background:#fff}
+      .header{padding:20px 16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .total-card{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .chart-card,.section-card{box-shadow:none;border:1px solid #e5e7eb}
+      .laporan-section,.riwayat-section{display:block!important}
+      .laporan-section.hide{display:block!important}
+      .riwayat-section{display:block!important}
+      body{padding-bottom:0}
+    }
   </style>
 </head>
 <body>
@@ -143,6 +156,12 @@
 
 <!-- LAPORAN SECTION -->
 <div class="laporan-section content" id="laporanSection">
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <button class="btn-export" onclick="exportLaporanPDF()" style="background:#ef4444;flex:1;justify-content:center">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+      Ekspor Laporan PDF
+    </button>
+  </div>
   <div class="chart-card">
     <h4>📈 Penjualan 7 Hari Terakhir</h4>
     <div class="chart-wrap"><canvas id="barChart"></canvas></div>
@@ -176,9 +195,13 @@
       <option>QRIS</option>
     </select>
     <input type="date" id="filterTanggal" onchange="renderRiwayat()"/>
-    <button class="btn-export" onclick="exportCSV()">
+    <button class="btn-export" onclick="exportCSV()" style="background:#16a34a">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       CSV
+    </button>
+    <button class="btn-export" onclick="exportPDF()" style="background:#ef4444">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+      PDF
     </button>
   </div>
   <div class="table-wrap">
@@ -533,6 +556,65 @@ function initCharts() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       tooltip:{callbacks:{label:function(ctx){ return ' '+formatRp(ctx.parsed);}}}},cutout:'65%'}
   });
+}
+
+function exportPDF() {
+  // Simpan state tab
+  var lapEl = document.getElementById('laporanSection');
+  var rwEl  = document.getElementById('riwayatSection');
+  var lapClass = lapEl.className;
+  var rwClass  = rwEl.className;
+
+  // Tampilkan hanya riwayat untuk print
+  lapEl.className = 'laporan-section content hide';
+  rwEl.className  = 'riwayat-section content show';
+
+  // Pastikan riwayat ter-render
+  renderRiwayat();
+
+  // Tambah judul print
+  var title = document.createElement('div');
+  title.id = 'printTitle';
+  title.style.cssText = 'text-align:center;padding:12px 0 8px;font-size:16px;font-weight:700;color:#1f2937;display:none';
+  title.innerHTML = 'Riwayat Transaksi – Toko Meduro<br><span style="font-size:11px;font-weight:400;color:#6b7280">Dicetak: ' + new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}) + '</span>';
+  document.body.insertBefore(title, document.body.firstChild);
+
+  setTimeout(function() {
+    title.style.display = 'block';
+    window.print();
+    setTimeout(function() {
+      document.body.removeChild(title);
+      lapEl.className = lapClass;
+      rwEl.className  = rwClass;
+    }, 500);
+  }, 300);
+}
+
+function exportLaporanPDF() {
+  var lapEl = document.getElementById('laporanSection');
+  var rwEl  = document.getElementById('riwayatSection');
+  var lapClass = lapEl.className;
+  var rwClass  = rwEl.className;
+
+  // Tampilkan hanya laporan analitik
+  lapEl.className = 'laporan-section content';
+  rwEl.className  = 'riwayat-section content';
+
+  var title = document.createElement('div');
+  title.id = 'printTitle';
+  title.style.cssText = 'text-align:center;padding:12px 0 8px;font-size:16px;font-weight:700;color:#1f2937;display:none';
+  title.innerHTML = 'Laporan Penjualan – Toko Meduro<br><span style="font-size:11px;font-weight:400;color:#6b7280">Dicetak: ' + new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}) + '</span>';
+  document.body.insertBefore(title, document.body.firstChild);
+
+  setTimeout(function() {
+    title.style.display = 'block';
+    window.print();
+    setTimeout(function() {
+      document.body.removeChild(title);
+      lapEl.className = lapClass;
+      rwEl.className  = rwClass;
+    }, 500);
+  }, 300);
 }
 
 // ── INIT ──
