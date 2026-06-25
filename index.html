@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
     html,body{
       width:100%;max-width:430px;margin:0 auto;
       font-family:'Poppins',sans-serif;
@@ -17,27 +16,13 @@
       align-items:center;justify-content:center;
       padding:24px 20px;
     }
+    body::before{content:'';position:fixed;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.07);top:-80px;right:-80px;pointer-events:none}
+    body::after{content:'';position:fixed;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-60px;left:-60px;pointer-events:none}
 
-    /* Decorative circles */
-    body::before{
-      content:'';position:fixed;
-      width:280px;height:280px;border-radius:50%;
-      background:rgba(255,255,255,0.07);
-      top:-80px;right:-80px;pointer-events:none;
-    }
-    body::after{
-      content:'';position:fixed;
-      width:200px;height:200px;border-radius:50%;
-      background:rgba(255,255,255,0.06);
-      bottom:-60px;left:-60px;pointer-events:none;
-    }
-
-    /* CARD */
     .card{
       width:100%;
       background:rgba(255,255,255,0.13);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
       border:1px solid rgba(255,255,255,0.22);
       border-radius:28px;
       padding:36px 24px 30px;
@@ -45,130 +30,60 @@
       display:flex;flex-direction:column;align-items:center;
       animation:slideUp 0.5s ease both;
     }
+    @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
-    @keyframes slideUp{
-      from{opacity:0;transform:translateY(30px)}
-      to{opacity:1;transform:translateY(0)}
-    }
-
-    /* LOGO */
-    .logo-icon{
-      width:80px;height:80px;
-      background:#fff;
-      border-radius:22px;
-      display:flex;align-items:center;justify-content:center;
-      margin-bottom:14px;
-      box-shadow:0 6px 24px rgba(0,0,0,0.15);
-    }
+    .logo-icon{width:80px;height:80px;background:#fff;border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,0.15)}
     .logo-icon svg{width:44px;height:44px}
+    .logo-name{font-size:22px;font-weight:800;color:#fff;letter-spacing:1px;text-align:center}
+    .logo-sub{font-size:12px;color:rgba(255,255,255,0.75);margin-top:4px;text-align:center;margin-bottom:28px}
 
-    .logo-name{
-      font-size:22px;font-weight:800;
-      color:#fff;letter-spacing:1px;
-      text-align:center;
-    }
-    .logo-sub{
-      font-size:12px;color:rgba(255,255,255,0.75);
-      margin-top:4px;text-align:center;
-      margin-bottom:28px;
-    }
-
-    /* FORM */
-    .form{width:100%;display:flex;flex-direction:column;gap:16px}
-
+    .form{width:100%;display:flex;flex-direction:column;gap:14px}
     .field-group{display:flex;flex-direction:column;gap:6px}
-
-    .field-label{
-      font-size:11px;font-weight:700;
-      color:rgba(255,255,255,0.9);
-      text-transform:uppercase;letter-spacing:1px;
-    }
-
+    .field-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:1px}
     .input-wrap{position:relative}
-    .input-wrap svg{
-      position:absolute;left:14px;top:50%;
-      transform:translateY(-50%);
-      width:18px;height:18px;
-      color:rgba(255,255,255,0.55);
-    }
-
+    .input-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:rgba(255,255,255,0.55)}
     .input-wrap input{
-      width:100%;
-      padding:14px 16px 14px 44px;
+      width:100%;padding:14px 16px 14px 44px;
       background:rgba(255,255,255,0.15);
       border:1.5px solid rgba(255,255,255,0.25);
       border-radius:14px;
-      font-family:'Poppins',sans-serif;
-      font-size:14px;color:#fff;
-      outline:none;
-      transition:border-color 0.2s,background 0.2s;
+      font-family:'Poppins',sans-serif;font-size:14px;color:#fff;
+      outline:none;transition:border-color 0.2s,background 0.2s;
     }
     .input-wrap input::placeholder{color:rgba(255,255,255,0.45)}
-    .input-wrap input:focus{
-      border-color:rgba(255,255,255,0.65);
-      background:rgba(255,255,255,0.22);
-    }
+    .input-wrap input:focus{border-color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.22)}
 
-    .forgot{
-      text-align:right;margin-top:2px;
-    }
-    .forgot a{
-      font-size:12px;color:rgba(255,255,255,0.75);
-      text-decoration:none;font-weight:500;
-    }
-    .forgot a:active{color:#fff}
+    .forgot{text-align:right;margin-top:2px}
+    .forgot a{font-size:12px;color:rgba(255,255,255,0.75);text-decoration:none;font-weight:500}
 
-    /* BUTTON */
     .btn-masuk{
-      margin-top:6px;width:100%;
-      padding:16px;
-      background:#F47C2B;
-      border:none;border-radius:16px;
-      font-family:'Poppins',sans-serif;
-      font-size:16px;font-weight:700;
-      color:#fff;letter-spacing:1.5px;
-      cursor:pointer;
+      margin-top:4px;width:100%;padding:16px;
+      background:#F47C2B;border:none;border-radius:16px;
+      font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;
+      color:#fff;letter-spacing:1.5px;cursor:pointer;
       box-shadow:0 5px 20px rgba(244,124,43,0.5);
-      transition:transform 0.1s,box-shadow 0.2s;
-      -webkit-tap-highlight-color:transparent;
+      transition:transform 0.1s;-webkit-tap-highlight-color:transparent;
     }
-    .btn-masuk:active{
-      transform:scale(0.97);
-      box-shadow:0 2px 10px rgba(244,124,43,0.35);
-    }
+    .btn-masuk:active{transform:scale(0.97)}
 
-    /* DIVIDER */
-    .divider{
-      display:flex;align-items:center;
-      gap:10px;margin-top:22px;width:100%;
-    }
+    .divider{display:flex;align-items:center;gap:10px;margin-top:20px;width:100%}
     .divider span{flex:1;height:1px;background:rgba(255,255,255,0.2)}
     .divider p{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
 
-    /* TOAST */
     .toast{
-      display:none;
-      position:fixed;bottom:32px;left:50%;
+      display:none;position:fixed;bottom:32px;left:50%;
       transform:translateX(-50%);
-      padding:11px 24px;
-      border-radius:12px;
+      padding:11px 24px;border-radius:12px;
       font-size:13px;font-weight:500;color:#fff;
-      box-shadow:0 4px 16px rgba(0,0,0,0.25);
-      z-index:99;white-space:nowrap;
-      animation:toastIn 0.25s ease;
-    }
-    @keyframes toastIn{
-      from{opacity:0;transform:translateX(-50%) translateY(10px)}
-      to{opacity:1;transform:translateX(-50%) translateY(0)}
+      box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:99;white-space:nowrap;
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- Logo -->
   <div class="logo-icon">
-    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 44 44" fill="none">
       <rect x="4" y="16" width="36" height="24" rx="4" fill="#F47C2B"/>
       <path d="M14 16v-4a8 8 0 0116 0v4" stroke="#c94b8a" stroke-width="3" stroke-linecap="round"/>
       <rect x="17" y="22" width="10" height="7" rx="2.5" fill="#fff"/>
@@ -177,9 +92,7 @@
   <div class="logo-name">TOKO MEDURO</div>
   <div class="logo-sub">Sistem Manajemen Penjualan</div>
 
-  <!-- Form -->
   <div class="form">
-
     <div class="field-group">
       <div class="field-label">Username</div>
       <div class="input-wrap">
@@ -189,7 +102,6 @@
         <input id="username" type="text" placeholder="Masukkan username" autocomplete="username"/>
       </div>
     </div>
-
     <div class="field-group">
       <div class="field-label">Password</div>
       <div class="input-wrap">
@@ -200,50 +112,52 @@
       </div>
       <div class="forgot"><a href="#">Lupa Password?</a></div>
     </div>
-
     <button class="btn-masuk" onclick="handleLogin()">MASUK</button>
-
   </div>
 
-  <div class="divider">
-    <span></span>
-    <p>Toko Meduro © 2025</p>
-    <span></span>
-  </div>
+  <div class="divider"><span></span><p>Toko Meduro &copy; 2025</p><span></span></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const DUMMY = { username: 'admin', password: '1234' };
+var USERS = [
+  { username:'owner', password:'admin123', role:'owner', nama:'Pemilik Toko' },
+  { username:'kasir', password:'1234',     role:'kasir', nama:'Kasir' }
+];
+var AUTH_KEY = 'tokomeduro_auth';
 
-  function handleLogin() {
-    const u = document.getElementById('username').value.trim();
-    const p = document.getElementById('password').value;
+// Jika session masih aktif, langsung ke dashboard
+if (sessionStorage.getItem(AUTH_KEY)) {
+  window.location.href = 'dashboard.html';
+}
 
-    if (!u || !p) {
-      showToast('Username dan password wajib diisi.', false);
-      return;
-    }
-    if (u === DUMMY.username && p === DUMMY.password) {
-      showToast('Login berhasil! Menuju dashboard...', true);
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-    } else {
-      showToast('Username atau password salah.', false);
-    }
+function handleLogin() {
+  var u = document.getElementById('username').value.trim();
+  var p = document.getElementById('password').value;
+  if (!u || !p) { showToast('Username dan password wajib diisi.', false); return; }
+  var user = null;
+  for (var i = 0; i < USERS.length; i++) {
+    if (USERS[i].username === u && USERS[i].password === p) { user = USERS[i]; break; }
   }
+  if (!user) { showToast('Username atau password salah.', false); return; }
+  // Simpan ke sessionStorage — hilang saat browser/tab ditutup
+  sessionStorage.setItem(AUTH_KEY, JSON.stringify({
+    username: user.username, role: user.role, nama: user.nama
+  }));
+  showToast('Login berhasil! Menuju dashboard...', true);
+  setTimeout(function(){ window.location.href = 'dashboard.html'; }, 1200);
+}
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
-  });
+document.addEventListener('keydown', function(e){ if (e.key === 'Enter') handleLogin(); });
 
-  function showToast(msg, success = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.background = success ? 'rgba(34,160,90,0.95)' : 'rgba(220,60,60,0.95)';
-    t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 2500);
-  }
+function showToast(msg, ok) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = ok ? 'rgba(34,160,90,0.95)' : 'rgba(220,60,60,0.95)';
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display = 'none'; }, 2500);
+}
 </script>
 </body>
 </html>
