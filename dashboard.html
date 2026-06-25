@@ -9,14 +9,12 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{width:100%;max-width:430px;margin:0 auto;font-family:'Poppins',sans-serif;background:#f1f3f6;min-height:100vh;padding-bottom:70px}
 
-    /* HEADER */
     .header{background:linear-gradient(135deg,#3b2fc9,#5b3fd4);padding:44px 16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between}
     .header-left h2{font-size:18px;font-weight:700}
     .header-left p{font-size:12px;opacity:0.85;margin-top:2px}
     .avatar{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
     .avatar svg{width:20px;height:20px;color:#fff}
 
-    /* STAT CARDS */
     .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 12px 0}
     .stat-card{border-radius:14px;padding:14px;color:#fff;position:relative;overflow:hidden;min-height:105px;display:flex;flex-direction:column;justify-content:space-between}
     .stat-card::after{content:'';position:absolute;bottom:-16px;right:-16px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.1)}
@@ -24,45 +22,33 @@
     .stat-card.green{background:linear-gradient(135deg,#22c55e,#16a34a)}
     .stat-card.blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
     .stat-card.red{background:linear-gradient(135deg,#ef4444,#b91c1c)}
-    .card-icon{width:32px;height:32px;background:rgba(255,255,255,0.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .card-icon{width:32px;height:32px;background:rgba(255,255,255,0.25);border-radius:9px;display:flex;align-items:center;justify-content:center}
     .card-icon svg{width:17px;height:17px}
     .card-title{font-size:11px;font-weight:500;opacity:0.9;margin-top:6px}
     .card-value{font-size:22px;font-weight:700;line-height:1;margin-top:2px}
     .card-sub{font-size:10px;opacity:0.8;display:flex;align-items:center;gap:3px;margin-top:3px}
     .card-sub svg{width:10px;height:10px}
 
-    /* SHORTCUT */
     .shortcut-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px 0}
     .shortcut{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 5px rgba(0,0,0,0.06)}
     .shortcut-head{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px}
     .shortcut-head svg{width:14px;height:14px}
     .shortcut-empty{font-size:11px;color:#9ca3af}
 
-    /* QUICK ACCESS */
     .section-title{font-size:13px;font-weight:700;color:#1f2937;padding:12px 12px 6px}
-    .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px}
-    .quick-btn{background:#fff;border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;box-shadow:0 1px 5px rgba(0,0,0,0.06);cursor:pointer;transition:transform 0.1s}
-    .quick-btn:active{transform:scale(0.96)}
-    .quick-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
-    .quick-icon svg{width:20px;height:20px;color:#fff}
-    .quick-label{font-size:10px;font-weight:600;color:#374151;text-align:center}
 
-    /* STATUS TABLE */
-    .table-wrap{margin:10px 12px 0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,0.07)}
-    .table-head{background:#374151;padding:10px 12px;font-size:12px;font-weight:600;color:#fff}
+    .table-wrap{margin:0 12px 14px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,0.07)}
     table{width:100%;border-collapse:collapse;font-size:11px}
     thead tr{background:#f9fafb}
     thead th{padding:8px;text-align:left;font-weight:600;color:#6b7280;font-size:10px;border-bottom:1px solid #e5e7eb}
     tbody tr{border-bottom:1px solid #f3f4f6}
     tbody tr:last-child{border-bottom:none}
     tbody td{padding:9px 8px;color:#374151;vertical-align:middle}
-    .prod-name{font-weight:600;color:#1f2937;font-size:11px}
     .badge{display:inline-flex;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:600}
     .badge.aman{background:#d1fae5;color:#065f46}
     .badge.habis{background:#fee2e2;color:#991b1b}
     .badge.kritis{background:#fef3c7;color:#92400e}
 
-    /* BOTTOM NAV */
     .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:6px 0 10px;z-index:60}
     .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#9ca3af;text-decoration:none;cursor:pointer;position:relative;min-width:50px}
     .nav-item.active{color:#F47C2B}
@@ -82,7 +68,6 @@
   </div>
 </div>
 
-<!-- STAT CARDS -->
 <div class="cards-grid">
   <div class="stat-card purple">
     <div class="card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
@@ -118,7 +103,6 @@
   </div>
 </div>
 
-<!-- SHORTCUT -->
 <div class="shortcut-row">
   <div class="shortcut">
     <div class="shortcut-head">
@@ -136,38 +120,8 @@
   </div>
 </div>
 
-<!-- QUICK ACCESS -->
-<div class="section-title">Menu Cepat</div>
-<div class="quick-grid">
-  <a class="quick-btn" href="Transaksi.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#F47C2B,#e06a1a)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
-    <span class="quick-label">Kasir</span>
-  </a>
-  <a class="quick-btn" href="Produk.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>
-    <span class="quick-label">Stok Barang</span>
-  </a>
-  <a class="quick-btn" href="Pembelian.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></div>
-    <span class="quick-label">Barang Masuk</span>
-  </a>
-  <a class="quick-btn" href="BarangKeluar.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 8l4 4m0 0l-4 4m4-4H8"/></svg></div>
-    <span class="quick-label">Barang Keluar</span>
-  </a>
-  <a class="quick-btn" href="Laporan.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
-    <span class="quick-label">Laporan</span>
-  </a>
-  <a class="quick-btn" href="riwayattransaksi.html">
-    <div class="quick-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
-    <span class="quick-label">Riwayat</span>
-  </a>
-</div>
-
-<!-- STATUS STOK -->
 <div class="section-title">Status Stok Barang</div>
-<div class="table-wrap" style="margin-bottom:14px">
+<div class="table-wrap">
   <table>
     <thead><tr><th>Produk</th><th>Kategori</th><th>Stok</th><th>Status</th></tr></thead>
     <tbody id="stokBody"></tbody>
@@ -301,51 +255,58 @@ function getNomorTrx() {
   localStorage.setItem('tokomeduro_trx_counter', n);
   return '#TRX-' + String(n).padStart(4, '0');
 }
-function statusBadge(s){
-  if(s===0) return '<span class="badge habis">Habis</span>';
-  if(s<=3)  return '<span class="badge kritis">Kritis</span>';
+function statusBadge(s) {
+  if (s === 0) return '<span class="badge habis">Habis</span>';
+  if (s <= 3)  return '<span class="badge kritis">Kritis</span>';
   return '<span class="badge aman">Aman</span>';
 }
 
-function initDashboard(){
+function initDashboard() {
   const produk  = getProduk();
   const trxList = getTransaksi();
   const today   = new Date().toISOString().split('T')[0];
 
-  // Transaksi hari ini
-  const todayTrx = trxList.filter(t => t.tanggal === today);
-  const totalHariIni = todayTrx.reduce((s,t) => s + (t.total||0), 0);
+  const todayTrx     = trxList.filter(t => t.tanggal === today);
+  const totalHariIni = todayTrx.reduce((s, t) => s + (t.total || 0), 0);
 
   document.getElementById('statPenjualan').textContent = formatRp(totalHariIni);
-  document.getElementById('statTrx').textContent = todayTrx.length;
-  document.getElementById('statProduk').textContent = produk.filter(p=>p.stok>0).length;
-  document.getElementById('statKritis').textContent = produk.filter(p=>p.stok<=3).length;
+  document.getElementById('statTrx').textContent       = todayTrx.length;
+  document.getElementById('statProduk').textContent    = produk.filter(p => p.stok > 0).length;
+  document.getElementById('statKritis').textContent    = produk.filter(p => p.stok <= 3).length;
 
   // Produk terlaris
   const produkCount = {};
-  trxList.forEach(t => { if(t.items) t.items.forEach(i => { produkCount[i.nama]=(produkCount[i.nama]||0)+i.qty; }); });
-  const terlaris = Object.entries(produkCount).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('produkTerlaris').textContent = terlaris ? `${terlaris[0]} (${terlaris[1]} terjual)` : 'belum ada transaksi';
+  trxList.forEach(t => {
+    if (t.items) t.items.forEach(i => {
+      produkCount[i.nama] = (produkCount[i.nama] || 0) + i.qty;
+    });
+  });
+  const terlaris = Object.entries(produkCount).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById('produkTerlaris').textContent = terlaris
+    ? terlaris[0] + ' (' + terlaris[1] + ' terjual)'
+    : 'belum ada transaksi';
 
   // Transaksi terbaru
   const latest = trxList[0];
   document.getElementById('trxTerbaru').textContent = latest
-    ? `${latest.noTrx} – ${formatRp(latest.total)}`
+    ? latest.noTrx + ' - ' + formatRp(latest.total)
     : 'belum ada transaksi';
 
   // Stok table
-  document.getElementById('stokBody').innerHTML = produk.slice(0,6).map(p=>`
-    <tr>
-      <td><span style="font-weight:600;color:#1f2937;font-size:11px">${p.nama}</span></td>
-      <td style="font-size:10px;color:#6b7280">${p.kategori}</td>
-      <td style="font-weight:600;font-size:11px">${p.stok}</td>
-      <td>${statusBadge(p.stok)}</td>
-    </tr>`).join('');
+  document.getElementById('stokBody').innerHTML = produk.slice(0, 6).map(function(p) {
+    return '<tr>' +
+      '<td><span style="font-weight:600;color:#1f2937;font-size:11px">' + p.nama + '</span></td>' +
+      '<td style="font-size:10px;color:#6b7280">' + p.kategori + '</td>' +
+      '<td style="font-weight:600;font-size:11px">' + p.stok + '</td>' +
+      '<td>' + statusBadge(p.stok) + '</td>' +
+    '</tr>';
+  }).join('');
 
   // Nav badge
-  const k = produk.filter(p=>p.stok<=3).length;
+  const k = produk.filter(p => p.stok <= 3).length;
   const badge = document.getElementById('navBadge');
-  badge.textContent=k; badge.style.display=k>0?'flex':'none';
+  badge.textContent = k;
+  badge.style.display = k > 0 ? 'flex' : 'none';
 }
 
 initDashboard();
