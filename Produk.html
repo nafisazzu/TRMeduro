@@ -25,7 +25,7 @@
 
     /* NOTIF */
     .notif-wrapper{padding:8px 12px 0}
-    .notif-card{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:12px;padding:11px 14px;animation:slideDown 0.3s ease}
+    .notif-card{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:12px;padding:11px 14px;animation:slideDown 0.3s ease;position:relative}
     @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
     .notif-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
     .notif-title{font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:5px}
@@ -36,6 +36,11 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
     .notif-item-name{font-size:11px;font-weight:600;color:#fff}
     .notif-item-sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px}
+    .notif-close{position:absolute;top:9px;right:11px;width:18px;height:18px;cursor:pointer;color:rgba(255,255,255,0.8);background:none;border:none;display:flex;align-items:center;justify-content:center}
+    .notif-close svg{width:12px;height:12px}
+    .notif-card.stok{background:linear-gradient(135deg,#ea580c,#c2410c)}
+    .notif-card.stok .notif-dot{background:#fff;animation:pulse 1s infinite}
+    .notif-card.stok.habis{background:linear-gradient(135deg,#dc2626,#991b1b)}
 
     /* TOOLBAR */
     .toolbar{display:flex;gap:8px;padding:10px 12px 0;align-items:center}
@@ -130,6 +135,23 @@
       <span class="notif-count" id="notifCount">0</span>
     </div>
     <div id="notifItems"></div>
+  </div>
+</div>
+
+<!-- NOTIF STOK MENIPIS / HABIS -->
+<div class="notif-wrapper" id="notifStokWrapper" style="display:none">
+  <div class="notif-card stok" id="notifStokCard">
+    <button class="notif-close" onclick="tutupNotifStok()" title="Tutup">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <div class="notif-head">
+      <div class="notif-title">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        <span id="notifStokTitle">Stok Menipis</span>
+      </div>
+      <span class="notif-count" id="notifStokCount">0</span>
+    </div>
+    <div id="notifStokItems"></div>
   </div>
 </div>
 
@@ -411,6 +433,9 @@ function renderTable() {
   document.getElementById('statAman').textContent  = produk.filter(function(p){ return p.stok > 3; }).length;
   document.getElementById('statKritis').textContent= produk.filter(function(p){ return p.stok > 0 && p.stok <= 3; }).length;
   document.getElementById('statHabis').textContent = produk.filter(function(p){ return p.stok === 0; }).length;
+
+  renderNotifStok();
+  updateNotifBadge();
 }
 
 function tampilSemua() { showAll = true; renderTable(); }
@@ -479,6 +504,48 @@ function loadNotifProduk() {
   // Tandai semua dibaca
   var all = JSON.parse(raw).map(function(n){ n.dibaca = true; return n; });
   localStorage.setItem('tokomeduro_notif', JSON.stringify(all));
+}
+
+// ── NOTIF STOK MENIPIS / HABIS ──
+// Hanya disembunyikan untuk sesi browser saat ini saat ditutup pakai tombol X.
+// Akan muncul lagi otomatis di sesi baru, atau jika ada produk lain yang menipis/habis.
+function tutupNotifStok() {
+  sessionStorage.setItem('tokomeduro_notifstok_tutup', '1');
+  document.getElementById('notifStokWrapper').style.display = 'none';
+}
+
+function renderNotifStok() {
+  var wrapper = document.getElementById('notifStokWrapper');
+  var card    = document.getElementById('notifStokCard');
+  var titleEl = document.getElementById('notifStokTitle');
+  var countEl = document.getElementById('notifStokCount');
+  var itemsEl = document.getElementById('notifStokItems');
+
+  var produk  = getProduk();
+  var habis   = produk.filter(function(p){ return p.stok === 0; });
+  var kritis  = produk.filter(function(p){ return p.stok > 0 && p.stok <= 3; });
+  var bermasalah = habis.concat(kritis);
+
+  if (bermasalah.length === 0) { wrapper.style.display = 'none'; return; }
+  if (sessionStorage.getItem('tokomeduro_notifstok_tutup') === '1') { wrapper.style.display = 'none'; return; }
+
+  // Warnai kartu merah kalau ada yang benar-benar habis, oranye kalau cuma menipis
+  card.classList.toggle('habis', habis.length > 0);
+  titleEl.textContent = habis.length > 0 ? 'Stok Habis & Menipis' : 'Stok Menipis';
+  countEl.textContent = bermasalah.length;
+
+  itemsEl.innerHTML = bermasalah.map(function(p){
+    var isHabis = p.stok === 0;
+    return '<div class="notif-item">' +
+      '<div class="notif-dot" style="background:'+(isHabis ? '#fff' : '#fde68a')+'"></div>' +
+      '<div>' +
+        '<div class="notif-item-name">'+p.nama+'</div>' +
+        '<div class="notif-item-sub">'+(isHabis ? 'Stok habis (0)' : 'Sisa stok: '+p.stok+' pcs')+' · '+p.kategori+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  wrapper.style.display = 'block';
 }
 
 // ── INIT ──
