@@ -1,209 +1,165 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
   <title>Toko Meduro – Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(160deg, #6c3fc5 0%, #c94b8a 55%, #f47c3c 100%);
+    html,body{
+      width:100%;max-width:430px;margin:0 auto;
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;
+      background:linear-gradient(160deg,#6c3fc5 0%,#c94b8a 55%,#f47c3c 100%);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      padding:24px 20px;
     }
 
-    .card {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 24px;
-      padding: 40px 32px 36px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
+    /* Decorative circles */
+    body::before{
+      content:'';position:fixed;
+      width:280px;height:280px;border-radius:50%;
+      background:rgba(255,255,255,0.07);
+      top:-80px;right:-80px;pointer-events:none;
+    }
+    body::after{
+      content:'';position:fixed;
+      width:200px;height:200px;border-radius:50%;
+      background:rgba(255,255,255,0.06);
+      bottom:-60px;left:-60px;pointer-events:none;
     }
 
-    /* Logo */
-    .logo-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 28px;
+    /* CARD */
+    .card{
+      width:100%;
+      background:rgba(255,255,255,0.13);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.22);
+      border-radius:28px;
+      padding:36px 24px 30px;
+      box-shadow:0 10px 48px rgba(0,0,0,0.22);
+      display:flex;flex-direction:column;align-items:center;
+      animation:slideUp 0.5s ease both;
     }
 
-    .logo-icon {
-      width: 72px;
-      height: 72px;
-      background: #fff;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:translateY(0)}
     }
 
-    .logo-icon svg {
-      width: 40px;
-      height: 40px;
+    /* LOGO */
+    .logo-icon{
+      width:80px;height:80px;
+      background:#fff;
+      border-radius:22px;
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:14px;
+      box-shadow:0 6px 24px rgba(0,0,0,0.15);
+    }
+    .logo-icon svg{width:44px;height:44px}
+
+    .logo-name{
+      font-size:22px;font-weight:800;
+      color:#fff;letter-spacing:1px;
+      text-align:center;
+    }
+    .logo-sub{
+      font-size:12px;color:rgba(255,255,255,0.75);
+      margin-top:4px;text-align:center;
+      margin-bottom:28px;
     }
 
-    .logo-name {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.5px;
+    /* FORM */
+    .form{width:100%;display:flex;flex-direction:column;gap:16px}
+
+    .field-group{display:flex;flex-direction:column;gap:6px}
+
+    .field-label{
+      font-size:11px;font-weight:700;
+      color:rgba(255,255,255,0.9);
+      text-transform:uppercase;letter-spacing:1px;
     }
 
-    .logo-sub {
-      font-size: 12px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 2px;
-      text-align: center;
+    .input-wrap{position:relative}
+    .input-wrap svg{
+      position:absolute;left:14px;top:50%;
+      transform:translateY(-50%);
+      width:18px;height:18px;
+      color:rgba(255,255,255,0.55);
     }
 
-    /* Form */
-    .form {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+    .input-wrap input{
+      width:100%;
+      padding:14px 16px 14px 44px;
+      background:rgba(255,255,255,0.15);
+      border:1.5px solid rgba(255,255,255,0.25);
+      border-radius:14px;
+      font-family:'Poppins',sans-serif;
+      font-size:14px;color:#fff;
+      outline:none;
+      transition:border-color 0.2s,background 0.2s;
+    }
+    .input-wrap input::placeholder{color:rgba(255,255,255,0.45)}
+    .input-wrap input:focus{
+      border-color:rgba(255,255,255,0.65);
+      background:rgba(255,255,255,0.22);
     }
 
-    .field-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 5px;
+    .forgot{
+      text-align:right;margin-top:2px;
+    }
+    .forgot a{
+      font-size:12px;color:rgba(255,255,255,0.75);
+      text-decoration:none;font-weight:500;
+    }
+    .forgot a:active{color:#fff}
+
+    /* BUTTON */
+    .btn-masuk{
+      margin-top:6px;width:100%;
+      padding:16px;
+      background:#F47C2B;
+      border:none;border-radius:16px;
+      font-family:'Poppins',sans-serif;
+      font-size:16px;font-weight:700;
+      color:#fff;letter-spacing:1.5px;
+      cursor:pointer;
+      box-shadow:0 5px 20px rgba(244,124,43,0.5);
+      transition:transform 0.1s,box-shadow 0.2s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn-masuk:active{
+      transform:scale(0.97);
+      box-shadow:0 2px 10px rgba(244,124,43,0.35);
     }
 
-    .input-wrap {
-      position: relative;
+    /* DIVIDER */
+    .divider{
+      display:flex;align-items:center;
+      gap:10px;margin-top:22px;width:100%;
     }
+    .divider span{flex:1;height:1px;background:rgba(255,255,255,0.2)}
+    .divider p{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
 
-    .input-wrap svg {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      color: rgba(255,255,255,0.6);
+    /* TOAST */
+    .toast{
+      display:none;
+      position:fixed;bottom:32px;left:50%;
+      transform:translateX(-50%);
+      padding:11px 24px;
+      border-radius:12px;
+      font-size:13px;font-weight:500;color:#fff;
+      box-shadow:0 4px 16px rgba(0,0,0,0.25);
+      z-index:99;white-space:nowrap;
+      animation:toastIn 0.25s ease;
     }
-
-    input {
-      width: 100%;
-      padding: 13px 14px 13px 42px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 12px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 14px;
-      color: #fff;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    input::placeholder { color: rgba(255,255,255,0.5); }
-
-    input:focus {
-      border-color: rgba(255,255,255,0.7);
-      background: rgba(255,255,255,0.25);
-    }
-
-    .forgot {
-      text-align: right;
-      margin-top: 4px;
-    }
-
-    .forgot a {
-      font-size: 11px;
-      color: rgba(255,255,255,0.75);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .forgot a:hover { color: #fff; }
-
-    .btn-masuk {
-      margin-top: 8px;
-      width: 100%;
-      padding: 15px;
-      background: #F47C2B;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-      cursor: pointer;
-      box-shadow: 0 4px 18px rgba(244,124,43,0.45);
-      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-    }
-
-    .btn-masuk:hover {
-      background: #e06b1a;
-      box-shadow: 0 6px 22px rgba(244,124,43,0.55);
-    }
-
-    .btn-masuk:active { transform: scale(0.98); }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 20px;
-      width: 100%;
-    }
-
-    .divider span {
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.25);
-    }
-
-    .divider p {
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-    }
-
-    .toast {
-      display: none;
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(220,60,60,0.9);
-      color: #fff;
-      padding: 10px 22px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-      z-index: 99;
-      animation: fadeup 0.3s ease;
-    }
-
-    @keyframes fadeup {
-      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    @media (max-width: 400px) {
-      .card { margin: 16px; padding: 32px 20px 28px; }
+    @keyframes toastIn{
+      from{opacity:0;transform:translateX(-50%) translateY(10px)}
+      to{opacity:1;transform:translateX(-50%) translateY(0)}
     }
   </style>
 </head>
@@ -211,42 +167,42 @@
 
 <div class="card">
   <!-- Logo -->
-  <div class="logo-wrap">
-    <div class="logo-icon">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="14" width="32" height="22" rx="3" fill="#F47C2B"/>
-        <path d="M13 14v-3a7 7 0 0 1 14 0v3" stroke="#c94b8a" stroke-width="2.5" stroke-linecap="round"/>
-        <rect x="16" y="19" width="8" height="6" rx="2" fill="#fff"/>
-      </svg>
-    </div>
-    <div class="logo-name">TOKO MEDURO</div>
-    <div class="logo-sub">Sistem Manajemen Penjualan</div>
+  <div class="logo-icon">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="16" width="36" height="24" rx="4" fill="#F47C2B"/>
+      <path d="M14 16v-4a8 8 0 0116 0v4" stroke="#c94b8a" stroke-width="3" stroke-linecap="round"/>
+      <rect x="17" y="22" width="10" height="7" rx="2.5" fill="#fff"/>
+    </svg>
   </div>
+  <div class="logo-name">TOKO MEDURO</div>
+  <div class="logo-sub">Sistem Manajemen Penjualan</div>
 
   <!-- Form -->
   <div class="form">
-    <div>
+
+    <div class="field-group">
       <div class="field-label">Username</div>
       <div class="input-wrap">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
         </svg>
-        <input id="username" type="text" placeholder="Masukkan username" autocomplete="username" />
+        <input id="username" type="text" placeholder="Masukkan username" autocomplete="username"/>
       </div>
     </div>
 
-    <div>
+    <div class="field-group">
       <div class="field-label">Password</div>
       <div class="input-wrap">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
         </svg>
-        <input id="password" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+        <input id="password" type="password" placeholder="Masukkan password" autocomplete="current-password"/>
       </div>
       <div class="forgot"><a href="#">Lupa Password?</a></div>
     </div>
 
     <button class="btn-masuk" onclick="handleLogin()">MASUK</button>
+
   </div>
 
   <div class="divider">
@@ -266,15 +222,14 @@
     const p = document.getElementById('password').value;
 
     if (!u || !p) {
-      showToast('Username dan password wajib diisi.');
+      showToast('Username dan password wajib diisi.', false);
       return;
     }
-
     if (u === DUMMY.username && p === DUMMY.password) {
       showToast('Login berhasil! Menuju dashboard...', true);
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
     } else {
-      showToast('Username atau password salah.');
+      showToast('Username atau password salah.', false);
     }
   }
 
@@ -285,9 +240,7 @@
   function showToast(msg, success = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.style.background = success
-      ? 'rgba(34,160,90,0.92)'
-      : 'rgba(220,60,60,0.9)';
+    t.style.background = success ? 'rgba(34,160,90,0.95)' : 'rgba(220,60,60,0.95)';
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 2500);
   }
